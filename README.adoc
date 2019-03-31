@@ -1,0 +1,16 @@
+= Workshop
+venky@cloudera.com
+v0.1, March 31, 2019: Draft
+:page-layout: docs
+:description: 
+:imagesdir: ./images
+:uri-config: https://github.com/asciidoctor/asciidoctor/blob/master/compat/asciidoc.conf
+:uri-fontawesome: https://fontawesome.com/v4.7.0/
+
+=== Colophon
+Version: {revnumber}
+: {revdate}
+: {revremark}
+
+=== What
+Contains a collection of documents and links to run workshops.
