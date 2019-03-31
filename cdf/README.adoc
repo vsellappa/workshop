@@ -1,0 +1,103 @@
+= CDF Workshop
+venky@cloudera.com
+v0.1, March 31, 2019: Draft
+:page-layout: docs
+:description: Workshop Prerequisites
+:imagesdir: ./images
+:uri-config: https://github.com/asciidoctor/asciidoctor/blob/master/compat/asciidoc.conf
+:uri-fontawesome: https://fontawesome.com/v4.7.0/
+
+=== Colophon
+Version: {revnumber}
+: {revdate}
+: {revremark}
+
+=== What
+Contains a collection of documents and links to run a CDF workshop.
+
+=== Pre-Requisites (For Instructors)
+. Login to Hortonworks AWS with your Okta username and password.
+
+. Get the latest GA version of HDF 3.3 AMI over here: https://community.hortonworks.com/articles/218863/automate-deployment-of-hdp30hdf32-or-hdf32-standal.html[Automated Deployment]
+
+. HDF 3.4 (Non-GA) is in North California Region, AMI ID: `+ami-09430b7dcfdbc167c+`
+
+. Template script for creating a HDF only AMI : https://gist.github.com/abajwa-hw/c37d0e847054cf519813066401c33388[HDF 3.4]
+
+. Copy this AMI over to your region.
+.. As an example, for EU-Frankfurt, the HDF 3.3 AMI ID: `+ami-0cf8ac3c0e13d9aee+`
+
+. Create a new ssh key via ssh-keygen and import it into the required region.
+This key will be used for giving access to the AMI for participants.Save the private key.
+
+. Create the AMI instance in the normal way and attach the previously generated keypair. Ensure that the security group only has 22,8080 and 9090 accessible.
+
+. Once the instance is up, login via ssh, login to Ambari and check NiFI
+
+ ssh -i <.pem file> -l centos <IPAddress> 
+
+. For Ambari:
+
+ http://<IPAddress:8080> 
+ username: admin
+ password: StrongPassword
+
+
+. Convert the .pem or openssh key to .ppk for windows users: https://aws.amazon.com/premiumsupport/knowledge-center/convert-pem-file-into-ppk/[ConvertPEM]
+.. Upload the .ppk file to a secure location. (I use private github).
+.. This file needs to be handed to the participants.
+
+. CDF 101 and 201 presentation deck: https://docs.google.com/presentation/d/1bPtX2R1XVXgwV7zukJlgH4FZrV4zHGVQYijd5YrsWuI/edit?usp=sharing[Slidedeck]
+
+=== TODO's
+
+. Automate creation of "n" number of AWS instances via CLI based on an AMI-ID.
+. Generate "n" ssh keys and attach to each one of the instance.
+. Create a file that maps the IP Address of the newly created instances with their respective ssh keys.
+
+=== For Participants
+
+===== Connecting to Your Cluster
+
+. Get the IPAddress of the EC2 node from your instructor.
+
+* Putty Users
+** Download https://gist.githubusercontent.com/vsellappa/4cf761120eb2324320c8c275594fb623/raw/f84691093b0ea9ff1ce4efa90c3de8bc19ca80a7/FRA_HDF_workshop.ppk[this ppk file] and save it as hdf-workshop.ppk
+** Use Putty to connect to your node using the ppk key.
+
+image::putty.png[]
+
+** Create a new session called `hdf-workshop`
+
+... For the host name use: centos@IPAddress
+... Click "save" on the session page before logging in.
+
+image::putty-session.png[]
+
+* Linux or OSX Users
+
+** Download https://gist.githubusercontent.com/vsellappa/e8e5f9e3bb0ed236693ac58c4345cb9d/raw/b2c0e88f59172cf26cbe136c5f83b9fffe047d8f/FRA_HDF_workshop.pem[this pem file] and save it as hdf-workshop.pem
+
+** Change the permission of the .pem file
+ 
+ chmod 400 hdf-workshop.pem
+
+** Login to your EC2 node
+
+ ssh -i hdf-workshop.pem -l centos <IPAddress>
+
+===== Sanity Check
+
+* Login to Ambari
+
+ http://<IPAddress:8080> 
+ username: admin
+ password: StrongPassword
+
+* Check NiFI
+
+ http://<IPAddress:9090>/nifi
+
+
+
+https://github.com/apsaltis/HDF-Workshop#lab-2[Continue here]
