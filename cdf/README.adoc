@@ -1,6 +1,6 @@
 = CDF Workshop
 venky@cloudera.com
-v0.1, March 31, 2019: Draft
+v0.2, April 16, 2019: Draft
 :page-layout: docs
 :description: Workshop Prerequisites
 :imagesdir: ./images
@@ -55,6 +55,8 @@ This key will be used for giving access to the AMI for participants.Save the pri
 . Automate creation of "n" number of AWS instances via CLI based on an AMI-ID.
 . Generate "n" ssh keys and attach to each one of the instance.
 . Create a file that maps the IP Address of the newly created instances with their respective ssh keys.
+. (Optional) Re-map ports via ssh? 
+. 
 
 === For Participants
 
@@ -101,4 +103,4 @@ image::putty-session.png[]
 
 
 
-https://github.com/apsaltis/HDF-Workshop#lab-2[Continue here]
+https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Continue here]
