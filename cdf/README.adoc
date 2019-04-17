@@ -53,10 +53,10 @@ This key will be used for giving access to the AMI for participants.Save the pri
 === TODO's
 
 . Automate creation of "n" number of AWS instances via CLI based on an AMI-ID.
+.. Add pdssh to the AMI
+.. Re-map ports on the AMI
 . Generate "n" ssh keys and attach to each one of the instance.
 . Create a file that maps the IP Address of the newly created instances with their respective ssh keys.
-. (Optional) Re-map ports via ssh? 
-. 
 
 === For Participants
 
@@ -97,10 +97,11 @@ image::putty-session.png[]
  username: admin
  password: StrongPassword
 
-* Check NiFI
+* Check NiFi
 
  http://<IPAddress:9090>/nifi
 
+===== Lab 101
+* Start Lab 101 from https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[here]
 
-
-https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Continue here]
+* Finish Lab 101 at https://github.com/vsellappa/HDF-Workshop#lab-8[here]
