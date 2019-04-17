@@ -2,8 +2,9 @@
 venky@cloudera.com
 v0.2, April 16, 2019: Draft
 :page-layout: docs
-:description: Workshop Prerequisites
+:description: CDF Workshop
 :imagesdir: ./images
+:icons: font
 :uri-config: https://github.com/asciidoctor/asciidoctor/blob/master/compat/asciidoc.conf
 :uri-fontawesome: https://fontawesome.com/v4.7.0/
 
@@ -26,14 +27,14 @@ Contains a collection of documents and links to run a CDF workshop.
 
 . Copy this AMI over to your region.
 .. As an example, for EU-Frankfurt, the HDF 3.3 AMI ID: `+ami-0cf8ac3c0e13d9aee+`
-.. A more complete AMI, in EU-Frankfurt region with minifi and minifi-toolkit : `ami-046741d23e86f3cf9`
+.. A more complete AMI, in EU-Frankfurt region with minifi and minifi-toolkit: `ami-046741d23e86f3cf9`
 
 . Create a new ssh key via ssh-keygen and import it into the required region.
 This key will be used for giving access to the AMI for participants.Save the private key.
 
-. Create the AMI instance in the normal way and attach the previously generated keypair. Ensure that the security group only has 22,8080 and 9090 accessible.
+. Create the AMI instance in the normal way and attach the previously generated keypair. Ensure that the security group only has 22,8080,9090 7788, 61080 accessible.
 
-. Once the instance is up, login via ssh, login to Ambari and check NiFI
+. Once the instance is up, login via ssh, login to Ambari and check NiFi
 
  ssh -i <.pem file> -l centos <IPAddress> 
 
@@ -101,7 +102,5 @@ image::putty-session.png[]
 
  http://<IPAddress:9090>/nifi
 
-===== Lab 101
-* Start Lab 101 from https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[here]
-
-* Finish Lab 101 at https://github.com/vsellappa/HDF-Workshop#lab-8[here]
+===== Labs
+* Lab 101 : https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Start] / https://github.com/vsellappa/HDF-Workshop#lab-8[Finish]
