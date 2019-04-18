@@ -5,7 +5,6 @@ v0.2, April 16, 2019: Draft
 :description: CDF Workshop
 :imagesdir: ./images
 :icons: font
-:uri-config: https://github.com/asciidoctor/asciidoctor/blob/master/compat/asciidoc.conf
 :uri-fontawesome: https://fontawesome.com/v4.7.0/
 
 === Colophon
@@ -17,22 +16,18 @@ Version: {revnumber}
 Contains a collection of documents and links to run a CDF workshop.
 
 === Pre-Requisites (For Instructors)
-. Login to Hortonworks AWS with your Okta username and password.
+. Login to AWS (Hortonworks or Cloudera) with your Okta username and password.
+.. AMI, in EU-Frankfurt region with minifi and minifi-toolkit pre-installed `ami-046741d23e86f3cf9`
 
-. Get the latest GA version of HDF 3.3 AMI over here: https://community.hortonworks.com/articles/218863/automate-deployment-of-hdp30hdf32-or-hdf32-standal.html[Automated Deployment]
+. Copy this AMI to your region. 
 
-. HDF 3.4 (Non-GA) is in North California Region, AMI ID: `+ami-09430b7dcfdbc167c+`
+. If you want to start from fresh, the deploy script is https://raw.githubusercontent.com/vsellappa/workshop/master/cdf/deploy/deploy_cdf_33.sh[here].
 
-. Template script for creating a HDF only AMI : https://gist.github.com/abajwa-hw/c37d0e847054cf519813066401c33388[HDF 3.4]
+. Create a new ssh key via ssh-keygen and import it into the required region.This key will be used for giving access to the AMI for participants.Save the private key. If you want to reuse the public https://gist.githubusercontent.com/vsellappa/e8e5f9e3bb0ed236693ac58c4345cb9d/raw/b2c0e88f59172cf26cbe136c5f83b9fffe047d8f/FRA_HDF_workshop.pem[key] from below. The private key is https://drive.google.com/open?id=1KxIs5smWz9SUthvqiifpO8RZMupU3bQM[here].
 
-. Copy this AMI over to your region.
-.. As an example, for EU-Frankfurt, the HDF 3.3 AMI ID: `+ami-0cf8ac3c0e13d9aee+`
-.. A more complete AMI, in EU-Frankfurt region with minifi and minifi-toolkit: `ami-046741d23e86f3cf9`
+. Create the AMI instance in the normal way and attach the previously generated keypair. Ensure that the security group has 22,6667,7788,8080,9090,61080 accessible.
 
-. Create a new ssh key via ssh-keygen and import it into the required region.
-This key will be used for giving access to the AMI for participants.Save the private key.
-
-. Create the AMI instance in the normal way and attach the previously generated keypair. Ensure that the security group only has 22,8080,9090 7788, 61080 accessible.
+NOTE: Venues might have specific ports blocked, check this before-hand.
 
 . Once the instance is up, login via ssh, login to Ambari and check NiFi
 
@@ -54,8 +49,7 @@ This key will be used for giving access to the AMI for participants.Save the pri
 === TODO's
 
 . Automate creation of "n" number of AWS instances via CLI based on an AMI-ID.
-.. Add pdssh to the AMI
-.. Re-map ports on the AMI
+.. Re-map ports on the AMI ??
 . Generate "n" ssh keys and attach to each one of the instance.
 . Create a file that maps the IP Address of the newly created instances with their respective ssh keys.
 
@@ -103,4 +97,6 @@ image::putty-session.png[]
  http://<IPAddress:9090>/nifi
 
 ===== Labs
-* Lab 101 : https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Start] / https://github.com/vsellappa/HDF-Workshop#lab-8[Finish]
+* Lab 101: https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Start] / https://github.com/vsellappa/HDF-Workshop#lab-8[Finish]
+
+* Lab 201: TBD
