@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# Launch Centos/RHEL 7 Vm  with at least 4 cores / 16Gb mem / 60Gb disk
-# Then run:
-# curl -sSL https://gist.github.com/abajwa-hw/c37d0e847054cf519813066401c33388/raw | sudo -E sh  
-
+##
+##
+## Launch Centos/RHEL 7 Vm  with at least 4 cores / 16Gb mem / 60Gb disk
+## Then run this script.
+##
+##
 export ambari_password=${ambari_password:-StrongPassword}
 export db_password=${db_password:-StrongPassword}
 export nifi_password=${nifi_password:-StrongPassword}
@@ -30,7 +32,6 @@ fi
 
 export host=$(hostname -f)
 echo "Hostname is: ${host}"
-
 
 echo Installing Packages...
 sudo yum localinstall -y https://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm
@@ -160,6 +161,11 @@ tar zxvf /tmp/minifi-toolkit-0.*-bin.tar.gz
 cd /usr/hdf/current
 ln -s /usr/hdf/3.4.0.0-155/minifi-0.* minifi
 ln -s /usr/hdf/3.4.0.0-155/minifi-toolkit-0.* minifi-toolkit
+
+##
+## Tools for workshop usage
+##
+sudo yum install -y tmux
 
 if [ "${create_image}" = true  ]; then
   echo "Setting up auto start of services on boot"
