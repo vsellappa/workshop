@@ -162,11 +162,6 @@ cd /usr/hdf/current
 ln -s /usr/hdf/3.4.0.0-155/minifi-0.* minifi
 ln -s /usr/hdf/3.4.0.0-155/minifi-toolkit-0.* minifi-toolkit
 
-##
-## Tools for workshop usage
-##
-sudo yum install -y tmux
-
 if [ "${create_image}" = true  ]; then
   echo "Setting up auto start of services on boot"
   curl -sSL https://gist.github.com/abajwa-hw/408134e032c05d5ff7e592cd0770d702/raw | sudo -E sh
