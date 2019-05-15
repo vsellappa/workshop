@@ -23,11 +23,13 @@ Contains a collection of documents and links to run a CDF workshop.
 
 . If you want to start from fresh, the deploy script is https://raw.githubusercontent.com/vsellappa/workshop/master/cdf/deploy/deploy_cdf_33.sh[here].
 
-. Create a new ssh key via ssh-keygen and import it into the required region.This key will be used for giving access to the AMI for participants.Save the private key. If you want to reuse the public https://gist.githubusercontent.com/vsellappa/e8e5f9e3bb0ed236693ac58c4345cb9d/raw/b2c0e88f59172cf26cbe136c5f83b9fffe047d8f/FRA_HDF_workshop.pem[key] from below. The private key is https://drive.google.com/open?id=1KxIs5smWz9SUthvqiifpO8RZMupU3bQM[here].
+. Create a new ssh key via ssh-keygen and import it into the required region.This key will be used for giving access to the AMI for participants.Save the public key. If you want to reuse the https://gist.githubusercontent.com/vsellappa/e8e5f9e3bb0ed236693ac58c4345cb9d/raw/b2c0e88f59172cf26cbe136c5f83b9fffe047d8f/FRA_HDF_workshop.pem[key] combination from below. The public key is https://drive.google.com/drive/folders/1D6WKX5UzZrfBW1lW_Vjw7V6U3Az7kyiE?usp=sharing[here]. Attach the public key to your AMI. This will already be done if you are using the AMI from above.
 
 . Create the AMI instance in the normal way and attach the previously generated keypair. Ensure that the security group has 22,6667,7788,8080,9090,61080 accessible.
 
-NOTE: Venues might have specific ports blocked, check this before-hand.
++
+NOTE: Venues might have specific ports blocked, check this before-hand. In some cases participant laptops might have restrictive firewalls as well.
+
 
 . Once the instance is up, login via ssh, login to Ambari and check NiFi
 
@@ -39,12 +41,11 @@ NOTE: Venues might have specific ports blocked, check this before-hand.
  username: admin
  password: StrongPassword
 
-
 . Convert the .pem or openssh key to .ppk for windows users: https://aws.amazon.com/premiumsupport/knowledge-center/convert-pem-file-into-ppk/[ConvertPEM]
 .. Upload the .ppk file to a secure location. (I use private github).
 .. This file needs to be handed to the participants.
 
-. CDF 101 and 201 presentation deck: https://docs.google.com/presentation/d/1bPtX2R1XVXgwV7zukJlgH4FZrV4zHGVQYijd5YrsWuI/edit?usp=sharing[Slidedeck]
+. CDF 101 and 201 presentation deck: https://docs.google.com/presentation/d/1TjmJLdaB8gPkoEs33WKteI_f21Eo5K1f6hfrtiRPDbg/edit?usp=sharing[Slidedeck]
 
 === TODO's
 
@@ -95,6 +96,8 @@ image::putty-session.png[]
 * Check NiFi
 
  http://<IPAddress:9090>/nifi
+
+* Bookmark the NiFi URL. This will be used thru' out the labs.
 
 ===== Labs
 * Lab 101: https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Start] / https://github.com/vsellappa/HDF-Workshop#lab-8[Finish]
