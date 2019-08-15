@@ -1,0 +1,50 @@
+= How To Connect 
+venky@cloudera.com
+v0.3, April 16, 2019: Draft
+:page-layout: docs
+:description: CDF Workshop
+:imagesdir: ./images
+:icons: font
+:uri-fontawesome: https://fontawesome.com/v4.7.0/
+
+=== Colophon
+Version: {revnumber}
+: {revdate}
+: {revremark}
+ 
+===== Connecting to Your Cluster
+
+. Get the IPAddress of your cluster.
+
+* Putty Users
+** Download https://gist.githubusercontent.com/vsellappa/4cf761120eb2324320c8c275594fb623/raw/f84691093b0ea9ff1ce4efa90c3de8bc19ca80a7/FRA_HDF_workshop.ppk[this ppk file] and save it as hdf-workshop.ppk
+** Use Putty to connect to your node using the ppk key.
+
+image::putty.png[]
+
+** Create a new session called `workshop`
+
+... For the host name use: centos@IPAddress
+... Click "save" on the session page before logging in.
+
+image::putty-session.png[]
+
+* Linux or OSX Users
+
+** Download https://gist.githubusercontent.com/vsellappa/e8e5f9e3bb0ed236693ac58c4345cb9d/raw/b2c0e88f59172cf26cbe136c5f83b9fffe047d8f/FRA_HDF_workshop.pem[this pem file] and save it as workshop.pem
+
+** Change the permission of the .pem file
+ 
+ chmod 400 workshop.pem
+
+** Login to your cluster
+
+ ssh -i workshop.pem -l centos <IPAddress>
+
+===== Sanity Check
+
+* Login to Ambari
+
+ http://<IPAddress:8080> 
+ username: admin
+ password: StrongPassword

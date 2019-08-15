@@ -1,0 +1,3 @@
+[submodule "cdf/Lab101"]
+	path = cdf/Lab101
+	url = https://github.com/vsellappa/HDF-Workshop
