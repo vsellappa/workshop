@@ -1,6 +1,6 @@
 = CDF Workshop
 venky@cloudera.com
-v0.2, April 16, 2019: Draft
+v0.3, August 15, 2019: Draft
 :page-layout: docs
 :description: CDF Workshop
 :imagesdir: ./images
@@ -100,6 +100,6 @@ image::putty-session.png[]
 * Bookmark the NiFi URL. This will be used thru' out the labs.
 
 ===== Labs
-* Lab 101: https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Start] / https://github.com/vsellappa/HDF-Workshop#lab-8[Finish]
+* https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Lab 101] 
 
 * Lab 201: TBD
