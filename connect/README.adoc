@@ -17,7 +17,7 @@ Version: {revnumber}
 . Get the IPAddress of your cluster.
 
 * Putty Users
-** Download https://gist.githubusercontent.com/vsellappa/4cf761120eb2324320c8c275594fb623/raw/f84691093b0ea9ff1ce4efa90c3de8bc19ca80a7/FRA_HDF_workshop.ppk[this ppk file] and save it as hdf-workshop.ppk
+** Download https://raw.githubusercontent.com/vsellappa/workshop/master/keys/workshop.ppk[this ppk file] and save it as workshop.ppk
 ** Use Putty to connect to your node using the ppk key.
 
 image::putty.png[]
@@ -31,7 +31,7 @@ image::putty-session.png[]
 
 * Linux or OSX Users
 
-** Download https://gist.githubusercontent.com/vsellappa/e8e5f9e3bb0ed236693ac58c4345cb9d/raw/b2c0e88f59172cf26cbe136c5f83b9fffe047d8f/FRA_HDF_workshop.pem[this pem file] and save it as workshop.pem
+** Download https://raw.githubusercontent.com/vsellappa/workshop/master/keys/workshop.pem[this pem file] and save it as workshop.pem
 
 ** Change the permission of the .pem file
  
@@ -48,3 +48,5 @@ image::putty-session.png[]
  http://<IPAddress:8080> 
  username: admin
  password: StrongPassword
+
+* Check the status of the services of your cluster. Bear in mind that some services take longer to go green.
