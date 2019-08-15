@@ -46,15 +46,7 @@ NOTE: Venues might have specific ports blocked, check this before-hand. In some 
 + 
 NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/master/keys[here]
 
-
 . CDF 101 and 201 presentation deck: https://docs.google.com/presentation/d/1TjmJLdaB8gPkoEs33WKteI_f21Eo5K1f6hfrtiRPDbg/edit?usp=sharing[Slidedeck]
-
-=== TODO's
-
-. Automate creation of "n" number of AWS instances via CLI based on an AMI-ID.
-.. Re-map ports on the AMI ??
-. Generate "n" ssh keys and attach to each one of the instance.
-. Create a file that maps the IP Address of the newly created instances with their respective ssh keys.
 
 === For Participants
 
