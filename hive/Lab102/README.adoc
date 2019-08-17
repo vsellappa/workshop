@@ -1,0 +1,117 @@
+= Hive Workshop - Lab102
+<venky@cloudera.com>
+v0.1, 2019-08-16: draft
+:page-layout: docs
+:description: Hive Workshop Lab 102
+:icons: font
+:uri-fontawesome: https://fontawesome.com/v4.7.0/
+:imagesdir: ./images
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+[abstract]
+
+toc::[]
+
+=== Intro
+This lab assumes familiarity with Hive, Kafka, Spark and Hbase.
+
+=== Pre-Requisites
+A running instance of Hive 3.x and access to Kafka, Spark and Hbase. For an easy to use AMI and the required datasets. See https://github.com/vsellappa/workshop/tree/master/hive[here].
+
+
+=== Hive With Kafka
+
+* Get a streaming source of data to write to Kafka.
+** There is a mock data generator present at `/home/centos/datasets/json-data-generator-1.4.1-SNAPSHOT`.
+** The data generator can write a stream of data of various types onto different sinks including Kafka Topics.
+** Sample configs are TODO: link[here]. Move these config files to `/home/centos/datasets/json-data-generator-1.4.1-SNAPSHOT/conf`.
+
+** Test the generator
++
+[source,bash]
+----
+cd /home/centos/datasets/
+json-data-generator-1.4.1-SNAPSHOT/
+
+java -jar json-data-generator-1.4.1-SNAPSHOT.jar logger.config
+----
++
+If everything is right, then you should get a stream of data on the console that looks like the below.
+image:jsonDataGeneratorTest.png[]
++
+The simulator generates simulated trade data in CSV format controlled by the `trading.workflow.json` file.
++
+Shut the simulator down.
+
+* Create a Kafka Topic
++
+[source,bash]
+----
+cd /usr/hdp/current/kafka-broker
+
+bin/kafka-topics.sh --zookeeper localhost:2181 -create --partitions 1 --replication-factor 1 --topic trades
+
+bin/kafka-topics.sh --list --zookeeper localhost:2181
+----
+* Write data to the Kafka Topic created above.
++
+[source,bash]
+----
+cd home/centos/datasets/json-data-generator-1.4.1-SNAPSHOT/
+
+java -jar json-data-generator-1.4.1-SNAPSHOT.jar kafka.config
+----
++
+By default, the kafka.config writes to a Kafka Topic called `trades` where the broker.server is at `demo.hortonworks.com:6667`. 
+
+* Check that data is flowing thru to the kafka consumer.
++
+[source,bash]
+---- 
+bin/kafka-console-consumer.sh --bootstrap-server demo.hortonworks.com:6667 --from-beginning --topic trades
+----
+
+* Create a Hive table pointing to the Kafka topic.
++
+[source,sql]
+----
+CREATE EXTERNAL TABLE IF NOT EXISTS trades
+(
+ tradeId STRING
+, tradeDate STRING
+, venue STRING
+, cpty STRING
+, direction STRING
+, ccy STRING
+, amt DOUBLE
+, price DOUBLE
+, valuedate STRING
+, usdAmt DOUBLE)
+COMMENT 'Trades'
+STORED BY 'org.apache.hadoop.hive.kafka.KafkaStorageHandler'
+TBLPROPERTIES
+(
+"kafka.topic" = "trades"
+,"kafka.bootstrap.servers"="demo.hortonworks.com:6667"
+,"kafka.serde.class"="org.apache.hadoop.hive.serde2.OpenCSVSerde");
+----
++
+NOTE: The key properties are the TBLPROPERTIES and the STORED BY clause.
+
+* Query Live data with Kafka
+
+. 
+
+=== Hive With Spark
+WARNING: TBD !
+
+=== Hive With Hbase
+WARNING: TBD !
