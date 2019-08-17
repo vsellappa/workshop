@@ -87,6 +87,6 @@ NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/ma
 * After connecting follow the labs from below.
 
 ===== Labs
-* Lab 101: TBD
+* https://github.com/vsellappa/workshop/tree/master/hive/Lab101[Lab 101]
 
 * Lab 201: TBD
