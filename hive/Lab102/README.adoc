@@ -107,8 +107,26 @@ TBLPROPERTIES
 NOTE: The key properties are the TBLPROPERTIES and the STORED BY clause.
 
 * Query Live data with Kafka
-
-. 
+** Number of records in the last 10 minutes;
++
+[source,sql]
+----
+SELECT COUNT(*) FROM trades
+WHERE (`__timestamp` >  1000 * to_unix_timestamp(CURRENT_TIMESTAMP - interval '10' MINUTES));
+----
+** Define a view of data consumed within the past 15 minutes
++
+[source,sql]
+----
+CREATE VIEW IF NOT EXISTS last_15_minutes_of_trades AS 
+SELECT  tradeId
+, tradeDate
+, cpty
+, direction
+, ccy
+ADDED FROM trades 
+WHERE `__timestamp` >  1000 * to_unix_timestamp(CURRENT_TIMESTAMP - interval '15' MINUTES);
+---- 
 
 === Hive With Spark
 WARNING: TBD !
