@@ -70,9 +70,14 @@ image::lab1_hive_showdatabases.png[]
 +
 [source, sql]
 ----
-CREATE TABLE students (name VARCHAR(64), age INT, gpa DECIMAL(3,2));
+CREATE TABLE students (
+name VARCHAR(64)
+, age INT
+, gpa DECIMAL(3,2));
 
-INSERT INTO TABLE students VALUES ('fred flintstone', 35, 1.28), ('barney rubble', 32, 2.32);
+INSERT INTO TABLE students VALUES 
+('fred flintstone', 35, 1.28)
+, ('barney rubble', 32, 2.32);
 
 DESCRIBE EXTENDED default.students;
 
@@ -119,11 +124,11 @@ TIP: Check the file students.csv is visible via Ambari > Files View.
 [source,sql]
 ----
 CREATE EXTERNAL TABLE IF NOT EXISTS names_text(
-studentId INT, 
-firstName STRING,
-lastName STRING,    
-year STRING,
-major STRING)  
+studentId INT
+, firstName STRING
+, lastName STRING
+, year STRING
+, major STRING)
 COMMENT 'Student Names'  
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
@@ -141,11 +146,11 @@ SELECT * FROM names_text;
 [source,sql]
 ----
 CREATE TABLE IF NOT EXISTS names(
-studentId INT, 
-firstName STRING, 
-lastName STRING,    
-year STRING, 
-major STRING)
+studentId INT
+, firstName STRING
+, lastName STRING
+, year STRING
+, major STRING)
 COMMENT 'Student Names';
 ----
 ** Move External table data to Managed Table.
@@ -184,24 +189,24 @@ NOTE: The format of the lookup data is different from the trip data. Ensure this
 [source,sql]
 ----
 CREATE EXTERNAL TABLE IF NOT EXISTS yellowTripData (
-vendorId INT,
-tpepPickupDatetime TIMESTAMP,
-tpepDropoffDatetime TIMESTAMP,
-passengerCount INT,
-tripDistance DECIMAL,
-ratecodeId INT,
-storeAndFwdFlag VARCHAR(1),
-puLocationId INT,
-doLocationId INT,
-paymentType INT,
-fareAmount DECIMAL,
-extra DECIMAL,
-mtaTax DECIMAL,
-tipAmount DECIMAL,
-tollsAmount DECIMAL,
-improvementSurcharge DECIMAL,
-totalAmount DECIMAL,
-congestionSurcharge DECIMAL)
+vendorId INT
+, tpepPickupDatetime TIMESTAMP
+, tpepDropoffDatetime TIMESTAMP
+, passengerCount INT
+, tripDistance DECIMAL
+, ratecodeId INT
+, storeAndFwdFlag VARCHAR(1)
+, puLocationId INT
+, doLocationId INT
+, paymentType INT
+, fareAmount DECIMAL
+, extra DECIMAL
+, mtaTax DECIMAL
+, tipAmount DECIMAL
+, tollsAmount DECIMAL
+, improvementSurcharge DECIMAL
+, totalAmount DECIMAL
+, congestionSurcharge DECIMAL)
 COMMENT 'Yellow Taxi TripData'
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
 WITH SERDEPROPERTIES 
@@ -210,7 +215,10 @@ WITH SERDEPROPERTIES
     "quoteChar"     = "\""
 )       
 LOCATION '/tmp/data/nycTaxi/'
-TBLPROPERTIES ("skip.header.line.count"="1","transactional"="false");
+TBLPROPERTIES 
+(
+    "skip.header.line.count"="1","transactional"="false"
+);
 ----
 +
 IMPORTANT: https://cwiki.apache.org/confluence/display/Hive/CSV+Serde[OpenCSVSerDe] treats all columns to be of type String. Even if you create a table with non-string column types using this SerDe, the DESCRIBE TABLE output would show string column type. The type information is retrieved from the SerDe. To convert columns to the desired type in a table, you can create a view over the table that does the CAST to the desired type. Learn more about https://cwiki.apache.org/confluence/display/Hive/DeveloperGuide#DeveloperGuide-HiveSerDe[SerDe's] and their uses.
@@ -220,10 +228,10 @@ IMPORTANT: https://cwiki.apache.org/confluence/display/Hive/CSV+Serde[OpenCSVSer
 [source,sql]
 ----
 CREATE EXTERNAL TABLE IF NOT EXISTS taxiZoneLookup (
-locationId INT,
-borough STRING,
-zone STRING,
-serviceZone STRING)
+locationId INT
+, borough STRING
+, zone STRING
+, serviceZone STRING)
 COMMENT 'Taxi Zone Lookup'
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
 WITH SERDEPROPERTIES 
@@ -267,7 +275,7 @@ WHERE locationId=(SELECT locationId FROM tripCounts WHERE cnt=(SELECT max(cnt) F
 
 * Questions
 . Why did we put the lookup files in a separate directory in HDFS?
-. Find the region that has the most number of taxi dropffs.
+. Find the region that has the most number of taxi drop-offs.
 . How would you find the top-3 pick up and drop-off regions?
 . What happens if a _normal_ table is created with the same name as a temporary table?
 . Create a view on top of the trip data table casting the data into the desired datatypes.
@@ -275,9 +283,26 @@ WHERE locationId=(SELECT locationId FROM tripCounts WHERE cnt=(SELECT max(cnt) F
 === Analysis of Data At Rest - Part 2
 In this lab, we will use Materialized views and transactional tables to further analyse the data.
 
-=== Lab 4
+* Find the peak-hours for taxi pickup. This time we use Materialized Views instead of a temporary table.
++
+[source,sql]
+----
+CREATE MATERIALIZED VIEW IF NOT EXISTS peakHours
+DISABLE REWRITE
+AS
+SELECT 
+y.tpepPickupDateTime AS puHour
+,count(*) AS puCount
+FROM yellowTripData y
+WHERE y.puLocationId is NOT NULL 
+GROUP BY tpepPickupDateTime;
 
-    
+SELECT x.puHour
+, x.puCount 
+FROM peakHours x 
+WHERE x.puCount=(SELECT max(y.puCount) FROM peakHours y))
+----
+* https://cwiki.apache.org/confluence/display/Hive/Materialized+views[Materialized Views]
 
-
-    
+* Questions
+. How do you enable automatic query re-writing in Material Views? This is a *must-do*
