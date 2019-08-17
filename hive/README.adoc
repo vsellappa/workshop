@@ -1,15 +1,27 @@
 = Hive Workshop
-venky@cloudera.com
-v0.1, August 15, 2019: Draft
+<venky@cloudera.com>
+v0.1, 2019-08-16: draft
 :page-layout: docs
 :description: Hive Workshop
 :icons: font
 :uri-fontawesome: https://fontawesome.com/v4.7.0/
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
 
-=== Colophon
-Version: {revnumber}
+[colophon]
+version: {revnumber}
 : {revdate}
 : {revremark}
+
+[abstract]
+
 
 === What
 Contains a collection of documents and links to run a Hive workshop.
@@ -22,13 +34,32 @@ Contains a collection of documents and links to run a Hive workshop.
 
 . If you want to start from fresh, the deploy script is https://raw.githubusercontent.com/vsellappa/workshop/master/hive/deploy/deploy_hdp31_hdf34.sh[here].
 .. This script will not install Hive. The easiest way to do that is via Ambari > Add Services.
+.. The AMI also contains public and generated datasets under the /home/centos/datasets directory.
+.. Public datasets : NYC Taxi Data
++
+[source,shell]
+----
+
+wget https://s3.amazonaws.com/nyc-tlc/misc/taxi_zones.zip
+
+wget https://s3.amazonaws.com/nyc-tlc/misc/taxi+_zone_lookup.csv
+
+wget https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2019-04.csv
+
+wget https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2019-05.csv
+
+wget https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2019-06.csv
+
+wget https://github.com/maxis42/Big-Data-Engineering-Coursera-Yandex/raw/master/1%20Big%20data%20essentials/Homeworks/Week%206/data_dictionary_trip_records_yellow.pdf
+----
+.. Generated data sets are taken from https://github.com/everwatchsolutions/json-data-generator[here]. Bear in mind that maven will need to be installed if you start fresh. The AMI contains the binary with relevant config files for the same.
 
 . Create a new ssh key via ssh-keygen and import it into the required region.This key will be used for giving access to the AMI for participants.Save the public key. If you want to reuse the key combinations used https://github.com/vsellappa/workshop/tree/master/keys[here]. The public key is https://drive.google.com/drive/folders/1D6WKX5UzZrfBW1lW_Vjw7V6U3Az7kyiE?usp=sharing[here]. Attach the public key to your AMI instance. 
 
 . Create the AMI instance in the normal way and attach the previously generated keypair. Ensure that all ports are securely accessible.
 
 +
-NOTE: Venues might have specific ports blocked, check this before-hand. In some cases participant laptops might have restrictive firewalls as well.
+CAUTION: Venues might have specific ports blocked, check this before-hand. In some cases participant laptops might have restrictive firewalls as well.
 
 . Once the instance is up, login via ssh, login to Ambari and check services.
 
