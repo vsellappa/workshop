@@ -1,0 +1,283 @@
+= Hive Workshop - Lab101
+<venky@cloudera.com>
+v0.1, 2019-08-16: draft
+:page-layout: docs
+:description: Hive Workshop Lab 101
+:icons: font
+:uri-fontawesome: https://fontawesome.com/v4.7.0/
+:imagesdir: ./images
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+[abstract]
+
+toc::[]
+
+=== Intro
+In this lab, we will learn how to interact with Hive using HiveQL, do basic CRUD operations and work with External Tables.
+
+* Sanity Check 
+** Login to Ambari 
++
+[source]
+----
+username: admin
+password: StrongPassword
+----
+
+** In Ambari
++
+[source]
+----
+Hive > Settings > Run as end user instead of Hive user
+----
+set this to `false`.
++
+Accept the changes and re-start Hive.
+
+* Working With HiveQL
+** ssh into your cluster https://github.com/vsellappa/workshop/tree/master/connect[how-to]
+
+** Login to beeline as the hive user
++
+[source]
+----
+sudo su - hive
+
+beeline -u jdbc:hive2://demo.hortonworks.com:10000 -n hive -p
+----
+password is _StrongPassword_
++
+image::lab1_hive_login.png[]
+
+** Enter a query in HiveQL
++
+[source, sql]
+----
+SHOW DATABASES;
+----
++
+image::lab1_hive_showdatabases.png[]
+
+** Create table, insert data, describe table
++
+[source, sql]
+----
+CREATE TABLE students (name VARCHAR(64), age INT, gpa DECIMAL(3,2));
+
+INSERT INTO TABLE students VALUES ('fred flintstone', 35, 1.28), ('barney rubble', 32, 2.32);
+
+DESCRIBE EXTENDED default.students;
+
+!quit
+----
++
+NOTE: Note the location attribute of the created table.
+
+* External vs Managed Table
+. A major difference between an external and a managed (internal) table: the persistence of table data on the files system after a DROP TABLE statement.
+.. External table drop: Hive drops only the metadata, which consists mainly of the schema definition.
+.. Managed table drop: Hive deletes the data and the metadata stored in the Hive warehouse.
+. You can make the external table data available after dropping it by issuing another CREATE EXTERNAL TABLE statement to load the data from the file system.
+. The LOCATION clause in the CREATE TABLE specifies the location of external table data.
+
+* Practice
+** Create a text file named students.csv in /tmp that contains the following lines.
++
+[source,csv]
+----
+1,jane,doe,senior,mathematics
+2,john,smith,junior,engineering
+----
++
+** Move the file to /home/hdfs and load to hdfs.
++
+[source,bash]
+----
+sudo su - 
+mv /tmp/students.csv /home/hdfs/.
+su - hdfs
+hdfs dfs -mkdir /tmp/data
+hdfs dfs -chmod 777 /tmp/data
+hdfs dfs -put /home/hdfs/students.csv /tmp/data/.
+hdfs dfs -chmod 777 /tmp/data/students.csv
+hdfs dfs -ls 777 /tmp/data/students.csv
+----
+Logout of hdfs and root.
++ 
+TIP: Check the file students.csv is visible via Ambari > Files View.
++
+** Create an external table schema definition that specifies the text format, loads data from students.csv located in /tmp/data.
++
+[source,sql]
+----
+CREATE EXTERNAL TABLE IF NOT EXISTS names_text(
+studentId INT, 
+firstName STRING,
+lastName STRING,    
+year STRING,
+major STRING)  
+COMMENT 'Student Names'  
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/tmp/data';
+----
+** Verify table exists
++
+[source,sql]
+----
+SELECT * FROM names_text;
+----
+** Create the schema for a managed table.
++
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS names(
+studentId INT, 
+firstName STRING, 
+lastName STRING,    
+year STRING, 
+major STRING)
+COMMENT 'Student Names';
+----
+** Move External table data to Managed Table.
++
+[source,sql]
+----
+INSERT OVERWRITE TABLE names SELECT * FROM names_text;
+----
+** Verify that the data from the external table resides in the managed table, and drop the external table, and verify that the data still resides in the managed table.
++
+[source,sql]
+----
+SELECT * FROM names; 
+DROP TABLE names_text;
+SELECT * FROM names; 
+----
+* Questions
+. After dropping the external table names_text, what happens to the actual data in hdfs? 
+. After dropping the managed table names, what happens to the actual data in hdfs? 
+. How do you remove the table from the Hive Metastore _and_ remove the data stored externally? hint: `external.table.purge`
+. How do you kill a query in Hive?
+. Whats the `load data ..` command in Hive? How is this different from `insert into`?
+
+=== Analysis of Data At Rest - Part 1
+In this lab, we are going to import data at Rest into HDFS and analyse it with Hive.
+
+* Data to be used for analysis is present at `/home/centos/NYCTaxi`. The directory contains the following:
+** Taxi lookup data (taxi+_zone_lookup.csv)
+** Trip data (yellow_tripdata_2019-*.csv)
+** Data dictionary for the trip records
++
+NOTE: The format of the lookup data is different from the trip data. Ensure this is reflected when uploading to HDFS.
+
+* Import the trip data into HDFS and create a Hive table.
++
+[source,sql]
+----
+CREATE EXTERNAL TABLE IF NOT EXISTS yellowTripData (
+vendorId INT,
+tpepPickupDatetime TIMESTAMP,
+tpepDropoffDatetime TIMESTAMP,
+passengerCount INT,
+tripDistance DECIMAL,
+ratecodeId INT,
+storeAndFwdFlag VARCHAR(1),
+puLocationId INT,
+doLocationId INT,
+paymentType INT,
+fareAmount DECIMAL,
+extra DECIMAL,
+mtaTax DECIMAL,
+tipAmount DECIMAL,
+tollsAmount DECIMAL,
+improvementSurcharge DECIMAL,
+totalAmount DECIMAL,
+congestionSurcharge DECIMAL)
+COMMENT 'Yellow Taxi TripData'
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES 
+(
+    "separatorChar" = ",",
+    "quoteChar"     = "\""
+)       
+LOCATION '/tmp/data/nycTaxi/'
+TBLPROPERTIES ("skip.header.line.count"="1","transactional"="false");
+----
++
+IMPORTANT: https://cwiki.apache.org/confluence/display/Hive/CSV+Serde[OpenCSVSerDe] treats all columns to be of type String. Even if you create a table with non-string column types using this SerDe, the DESCRIBE TABLE output would show string column type. The type information is retrieved from the SerDe. To convert columns to the desired type in a table, you can create a view over the table that does the CAST to the desired type. Learn more about https://cwiki.apache.org/confluence/display/Hive/DeveloperGuide#DeveloperGuide-HiveSerDe[SerDe's] and their uses.
+
+* Upload the lookup data to HDFS and create a lookup table.
++
+[source,sql]
+----
+CREATE EXTERNAL TABLE IF NOT EXISTS taxiZoneLookup (
+locationId INT,
+borough STRING,
+zone STRING,
+serviceZone STRING)
+COMMENT 'Taxi Zone Lookup'
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES 
+(
+    "separatorChar" = ",",
+    "quoteChar"     = "\""
+)       
+LOCATION '/tmp/data/nycTaxi/lookup'
+TBLPROPERTIES ("skip.header.line.count"="1");
+----
+
+* Find the region that has the most number of taxi pickups.
++
+[source,sql]
+----
+SELECT 
+puLocationId AS locationId
+, count(*) AS cnt 
+FROM yellowTripData y 
+GROUP BY y.puLocationId
+ORDER BY cnt;
+----
+
+* Find the zone and borough with the highest number of pickups.
++
+[source,sql]
+----
+CREATE TEMPORARY TABLE IF NOT EXISTS tripCounts AS 
+SELECT puLocationId AS locationId
+, count(*) AS cnt 
+FROM yellowTripData y 
+GROUP BY y.puLocationId ORDER BY cnt;
+
+SELECT x.locationId AS locationId
+, x.zone AS zone
+, x.borough AS borough
+, x.serviceZone as serviceZone
+FROM taxiZoneLookup x 
+WHERE locationId=(SELECT locationId FROM tripCounts WHERE cnt=(SELECT max(cnt) FROM tripCounts));
+----
+
+* Questions
+. Why did we put the lookup files in a separate directory in HDFS?
+. Find the region that has the most number of taxi dropffs.
+. How would you find the top-3 pick up and drop-off regions?
+. What happens if a _normal_ table is created with the same name as a temporary table?
+. Create a view on top of the trip data table casting the data into the desired datatypes.
+
+=== Analysis of Data At Rest - Part 2
+In this lab, we will use Materialized views and transactional tables to further analyse the data.
+
+=== Lab 4
+
+    
+
+
+    
