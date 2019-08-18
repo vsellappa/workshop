@@ -28,7 +28,7 @@ Contains a collection of documents and links to run a Hive workshop.
 
 === Pre-Requisites (For Instructors)
 . Login to AWS (Hortonworks or Cloudera) with your Okta username and password.
-.. AMI, in EU-Frankfurt region HDP31 and HDF34 pre-installed [TODO:here]
+.. AMI, in EU-Frankfurt region HDP31 and HDF34 pre-installed `ami-06c00daa769c734e7`
 
 . Copy this AMI to your region for better performance. 
 
