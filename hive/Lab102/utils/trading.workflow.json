@@ -1,0 +1,52 @@
+{
+    "eventFrequency": 300,
+    "varyEventFrequency": true,
+    "repeatWorkflow": true,
+    "timeBetweenRepeat": 300,
+    "varyRepeatFrequency": true,
+    "stepRunMode": "random-pick-one",
+    "steps": [{
+            "config": [{
+                    "tradeid": "uuid()",
+                    "tradedate": "now()",
+                    "venue": "random('FXALL', 'BBG', '360T')",
+                    "cpty": "random('ABC Bank', 'YYZ Corp', 'AlphaTrading')",
+                    "dir": "random('B', 'S')",
+                    "ccypair": "USD/CAD",
+                    "amt": "random('500000', '1000000', '2000000' )",
+                    "price": "double(1.2800, 1.3000)",
+                    "valuedate": "now(+1_d)"
+                }],
+            "duration": 0
+        },
+	{
+            "config": [{
+                    "tradeid": "uuid()",
+                    "tradedate": "now()",
+                    "venue": "random('FXALL', 'BBG', '360T', 'Voice')",
+                    "cpty": "random('ABC Bank', 'Bulldogs Inc', 'AlphaTrading')",
+                    "dir": "random('B', 'S')",
+                    "ccypair": "EUR/USD",
+                    "amt": "random('500000', '1000000', '2000000', '3000000' )",
+                    "price": "double(1.1700, 1.1900)",
+                    "valuedate": "now(+2_d)"
+                }],
+            "duration": 0
+	},
+	{
+            "config": [{
+                    "tradeid": "uuid()",
+                    "tradedate": "now()",
+                    "venue": "random('FXALL', 'BBG')",
+                    "cpty": "random('London CapMkt', 'Bulldogs Inc', 'FX4Life', 'AlphaTrading')",
+                    "dir": "random('B', 'S')",
+                    "ccypair": "GBP/USD",
+                    "amt": "random('500000', '1000000', '2000000', '3000000' )",
+                    "price": "double(1.3000, 1.3200)",
+                    "valuedate": "now(+2_d)"
+                }],
+            "duration": 0
+	}
+    ]
+}
+

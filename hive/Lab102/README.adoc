@@ -1,4 +1,4 @@
-= Hive Workshop - Lab102
+= Hive Workshop - Analysis of Streaming Data With Hive
 <venky@cloudera.com>
 v0.1, 2019-08-16: draft
 :page-layout: docs
@@ -24,14 +24,14 @@ toc::[]
 This lab assumes familiarity with Hive, Kafka, Spark and Hbase.
 
 === Pre-Requisites
-A running instance of Hive 3.x and access to Kafka, Spark and Hbase. For an easy to use AMI and the required datasets. See https://github.com/vsellappa/workshop/tree/master/hive[here].
+A running instance of Hive 3.x, Kafka, Spark and Hbase. For an easy to use AMI and the required datasets. See https://github.com/vsellappa/workshop/tree/master/hive[here].
 
 
 === Hive With Kafka
 
 * Get a streaming source of data to write to Kafka.
 ** There is a mock data generator present at `/home/centos/datasets/json-data-generator-1.4.1-SNAPSHOT`.
-** The data generator can write a stream of data of various types onto different sinks including Kafka Topics.
+** The data generator can write an unbounded stream of data of various types onto different sinks including Kafka Topics.
 ** Sample configs are TODO: link[here]. Move these config files to `/home/centos/datasets/json-data-generator-1.4.1-SNAPSHOT/conf`.
 
 ** Test the generator
@@ -127,6 +127,7 @@ SELECT  tradeId
 ADDED FROM trades 
 WHERE `__timestamp` >  1000 * to_unix_timestamp(CURRENT_TIMESTAMP - interval '15' MINUTES);
 ---- 
+* Questions
 
 === Hive With Spark
 WARNING: TBD !
