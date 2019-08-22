@@ -20,7 +20,7 @@ endif::[]
 Steps to work with Kafka when you have a Ranger enabled kerberized HDP 3.x cluster. 
 
 === Assumptions
-Using `SASL_PLAINTEXT` module for Kafka.
+Using `SASL_PLAINTEXT` security module for Kafka.
 
 === Pre-Requisites
 Installation of components is assumed. A useable public AMI in Oregon Region  : `ami-03c5215653886996f`
@@ -104,7 +104,33 @@ kinit -Vkt /etc/security/keytabs/etl_user.keytab etl_user/$(hostname -f)@HWXDR.C
 
 .. Send messages on Producer window and it should be visible on the Consumer side.
 
-. Java programs to write data
-.. TBD !
-. Java programs to consume data
-.. TBD !
+. Using Java Client for Kerberized Kafka
+.. There are 5 properties that need to be set.
+... System Property: java.security.krb5.conf
+... System Property: java.security.auth.login.config
+... Kafka Producer Property:  security.protocol
+... Kafka Producer Property:  
+sasl.kerberos.service.name
+... System Property: _Optional_ broker and port combination
+
+.. Example for the AMI above
+... System Property
++
+[source,bash]
+----
+
+java.security.krb5.conf=/etc/krb5.conf
+java.security.auth.login.config=/etc/kafka/3.1.0.0-78/0/kafka_client_jaas.conf
+----
+... Kafka specific property
++
+[source,bash]
+----
+security.protocol=SASL_PLAINTEXT
+sasl.kerberos.service.name=kafka
+----
+
+. Complete Java Example
+.. TBD!
+
+
