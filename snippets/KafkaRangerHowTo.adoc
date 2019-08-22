@@ -1,0 +1,95 @@
+= Kafka and Ranger on a Kerberized HDP 3.x Cluster
+<venky@cloudera.com>
+v0.1, 2019-08-22: draft
+:page-layout: docs
+:description: How-to work with Kafka on a Ranger Enabled Kerberized HDP Cluster
+:icons: font
+:uri-fontawesome: https://fontawesome.com/v4.7.0/
+:imagesdir: ./images
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+=== Intro
+Steps to work with Kafka when you have a Ranger enabled kerberized HDP 3.x cluster. 
+
+=== Pre-Requisites
+Installation of components is assumed. Public AMI in Oregon Region  : `ami-03c5215653886996f`
+
+=== Sanity Check
+IMPORTANT: For the AMI given above only
+
+.. Map the AWS IP address to hdp31.cloudera.com in your /etc/hosts.
+.. This is knox-enabled, so use incognito or firefox else redirects.
+.. Check ambari at 8080, `https://hdp31.cloudera.com:8080`
++
+[source,bash]
+----
+username: admin
+password: BadPass#1
+----
+.. The default login user is `centos` and normal user is `etl_user`.
+.. Check that services are up.
+
+=== How-To
+. Create Topic 
+.. Best practice is to create this as `kafka` service user.
+.. Login as `centos`.
++
+[source,bash]
+----
+sudo su - kafka
+
+klist -kte /etc/security/keytabs/kafka.service.keytab
+
+kinit -Vkt /etc/security/keytabs/kafka.service.keytab kafka/$(hostname -f)@HWXDR.COM
+
+/usr/hdp/current/kafka-broker/bin/kafka-topics.sh --zookeeper $(hostname -f):2181 --list
+
+/usr/hdp/current/kafka-broker/bin/kafka-topics.sh --zookeeper $(hostname -f):2181 --create --topic zzzfoo --partitions 1 --replication-factor 1
+Created topic "zzzfoo"
+----
+
+. Apply Kafka ACL's for Producer , for user `etl_user` on topic `zzzfoo`
++
+[source,bash]
+----
+/usr/hdp/current/kafka-broker/bin/kafka-acls.sh --authorizer-properties zookeeper.connect=$(hostname -f) --add --allow-principal User:etl_user --producer --topic zzzfoo
+----
+
+. Apply Kafka ACL's for Consumer , for user `etl_user` on topic `zzzfoo` belonging to any group.
+
++
+[source,bash]
+----
+/usr/hdp/current/kafka-broker/bin/kafka-acls.sh --authorizer-properties zookeeper.connect=$(hostname -f) --add --allow-principal User:etl_user --consumer --topic zzzfoo --group *
+----
+
+. Test
+.. Login as `etl_user`.
++
+[source,bash]
+----
+sudo su - etl_user
+
+kinit -Vkt /etc/security/keytabs/etl_user.keytab etl_user/$(hostname -f)@HWXDR.COM
+----
+
+.. Open 2 terminal windows , one for producer and one for consumer.
++
+[source, bash]
+----
+/usr/hdp/current/kafka-broker/bin/kafka-console-producer.sh --broker-list $(hostname -f):6667 --topic zzzfoo --producer-property security.protocol=SASL_PLAINTEXT
+----
+
++
+[source, bash]
+----
+/usr/hdp/current/kafka-broker/bin/kafka-console-consumer.sh --bootstrap-server $(hostname -f):6667 --topic zzzfoo --consumer-property security.protocol=SASL_PLAINTEXT
+----
