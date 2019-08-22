@@ -19,21 +19,24 @@ endif::[]
 === Intro
 Steps to work with Kafka when you have a Ranger enabled kerberized HDP 3.x cluster. 
 
+=== Assumptions
+Using `SASL_PLAINTEXT` module for Kafka.
+
 === Pre-Requisites
-Installation of components is assumed. Public AMI in Oregon Region  : `ami-03c5215653886996f`
+Installation of components is assumed. A useable public AMI in Oregon Region  : `ami-03c5215653886996f`
+
+=== Steps
+. Create topic as kafka user.
+. Change using kafka acl's to allow specific user to access a topic as a producer.
+. Change using kafka acl's to allow specific user to consume data from a topic as a consumer.
+. Modify Ranger permissions to allow user to have access to kafka.
 
 === Sanity Check
 IMPORTANT: For the AMI given above only
 
-.. Map the AWS IP address to hdp31.cloudera.com in your /etc/hosts.
+.. Map the AWS IP address to `hdp31.cloudera.com` in your /etc/hosts.
 .. This is knox-enabled, so use incognito or firefox else redirects.
-.. Check ambari at 8080, `https://hdp31.cloudera.com:8080`
-+
-[source,bash]
-----
-username: admin
-password: BadPass#1
-----
+.. Check ambari at 8080, `https://hdp31.cloudera.com:8080` login as `admin/BadPass#1`
 .. The default login user is `centos` and normal user is `etl_user`.
 .. Check that services are up.
 
@@ -88,8 +91,20 @@ kinit -Vkt /etc/security/keytabs/etl_user.keytab etl_user/$(hostname -f)@HWXDR.C
 /usr/hdp/current/kafka-broker/bin/kafka-console-producer.sh --broker-list $(hostname -f):6667 --topic zzzfoo --producer-property security.protocol=SASL_PLAINTEXT
 ----
 
+.. Consumer
 +
 [source, bash]
 ----
 /usr/hdp/current/kafka-broker/bin/kafka-console-consumer.sh --bootstrap-server $(hostname -f):6667 --topic zzzfoo --consumer-property security.protocol=SASL_PLAINTEXT
 ----
+... This should fail, as `etl_user` is not enabled for kafka by default.
+... Go to Ranger UI at `http://hdp31.cloudera.com:6080`.
+... Change the Ranger policy under Kafka to include the `etl` group.
+... Save and *restart* Kafka.
+
+.. Send messages on Producer window and it should be visible on the Consumer side.
+
+. Java programs to write data
+.. TBD !
+. Java programs to consume data
+.. TBD !
