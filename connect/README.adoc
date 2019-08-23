@@ -1,8 +1,8 @@
 = How To Connect 
 venky@cloudera.com
-v0.3, April 16, 2019: Draft
+v0.4, April 23, 2019: Draft
 :page-layout: docs
-:description: CDF Workshop
+:description: How To Connect To Remote Cluster
 :imagesdir: ./images
 :icons: font
 :uri-fontawesome: https://fontawesome.com/v4.7.0/
@@ -12,7 +12,7 @@ Version: {revnumber}
 : {revdate}
 : {revremark}
  
-===== Connecting to Your Cluster
+==== Connecting to Your Cluster
 
 . Get the IPAddress of your cluster.
 
@@ -24,7 +24,7 @@ image::putty.png[]
 
 ** Create a new session called `workshop`
 
-... For the host name use: centos@IPAddress
+... For the host name use: <username>@<IPAddress>
 ... Click "save" on the session page before logging in.
 
 image::putty-session.png[]
@@ -34,19 +34,27 @@ image::putty-session.png[]
 ** Download https://raw.githubusercontent.com/vsellappa/workshop/master/keys/workshop.pem[this pem file] and save it as workshop.pem
 
 ** Change the permission of the .pem file
- 
- chmod 400 workshop.pem
++
+[source,bash]
+----
+chmod 400 workshop.pem
+----
 
 ** Login to your cluster
++
+[source,bash]
+----
+ssh -i workshop.pem -l <username> <IPAddress>
+----
 
- ssh -i workshop.pem -l centos <IPAddress>
-
-===== Sanity Check
+==== Sanity Check
 
 * Login to Ambari
-
- http://<IPAddress:8080> 
- username: admin
- password: StrongPassword
-
++
+[source,bash]
+----
+http://<IPAddress:8080> 
+username: admin
+password: <get password from instructor>
+----
 * Check the status of the services of your cluster. Bear in mind that some services take longer to go green.
