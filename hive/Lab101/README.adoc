@@ -98,7 +98,7 @@ image::lab1_hive_hdfspermissions_2.png[]
 +
 Save the policy and now exit the Ranger UI.
 
-** Go back to beeline terminal and now rerun the `CREATE TABLE` command. This time this should succeed.
+** Go back to beeline terminal and now rerun the `CREATE TABLE` command. This time it should succeed.
 
 ** Insert data and describe table.
 +
@@ -110,15 +110,6 @@ INSERT INTO TABLE default.students VALUES
 
 DESCRIBE EXTENDED default.students;
 ----
-+
-NOTE: Note the location attribute of the created table.
-
-* External vs Managed Table
-. A major difference between an external and a managed (internal) table: the persistence of table data on the files system after a DROP TABLE statement.
-.. External table drop: Hive drops only the metadata, which consists mainly of the schema definition.
-.. Managed table drop: Hive deletes the data and the metadata stored in the Hive warehouse.
-. You can make the external table data available after dropping it by issuing another CREATE EXTERNAL TABLE statement to load the data from the file system.
-. The LOCATION clause in the CREATE TABLE specifies the location of external table data.
 
 * Practice
 ** Create a text file named students.csv in /tmp that contains the following lines.
@@ -148,7 +139,7 @@ TIP: Check the file students.csv is visible via Ambari > Files View.
 +
 [source,sql]
 ----
-CREATE EXTERNAL TABLE IF NOT EXISTS names_text(
+CREATE EXTERNAL TABLE IF NOT EXISTS names_text (
 studentId INT
 , firstName STRING
 , lastName STRING
@@ -170,7 +161,7 @@ SELECT * FROM names_text;
 +
 [source,sql]
 ----
-CREATE TABLE IF NOT EXISTS names(
+CREATE TABLE IF NOT EXISTS names (
 studentId INT
 , firstName STRING
 , lastName STRING
@@ -192,15 +183,19 @@ SELECT * FROM names;
 DROP TABLE names_text;
 SELECT * FROM names; 
 ----
-+
-TIP: For every new login as `etl_user` , ensure that you `kinit` the session.
+
+* External vs Managed Table
+. A major difference between an external and a managed (internal) table, the persistence of table data on the file system after a `DROP TABLE` statement.
+.. External table drop: Hive drops only the metadata, which consists mainly of the schema definition.
+.. Managed table drop: Hive deletes the data and the metadata stored in the Hive warehouse.
+. You can make the external table data available after dropping it by issuing another CREATE EXTERNAL TABLE statement to load the data from the file system.
 
 * Questions
 . After dropping the external table names_text, what happens to the actual data in hdfs? 
 . After dropping the managed table names, what happens to the actual data in hdfs? 
 . How do you remove the table from the Hive Metastore _and_ remove the data stored externally? hint: `external.table.purge`
 . How do you kill a query in Hive?
-. Whats the `load data ..` command in Hive? How is this different from `insert into`?
+. Whats the `LOAD DATA ..` command in Hive? How is this different from `INSERT INTO`?
 
 === Analysis of Data At Rest - Part 1
 In this lab, we are going to import data at Rest into HDFS and analyse it with Hive.

@@ -1,6 +1,6 @@
 = Hive Workshop
 <venky@cloudera.com>
-v0.1, 2019-08-16: draft
+v0.2, 2019-08-29: draft
 :page-layout: docs
 :description: Hive Workshop
 :icons: font
@@ -99,15 +99,16 @@ NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/ma
 .. Map the given cluster IP Address to `*hdp31.cloudera.com*`
 
 . Connection details
-
- username/password for ambari: admin/BadPass#1
- username for ssh connections: centos
-
-* https://github.com/vsellappa/workshop/tree/master/connect[How To Connect]
++
+----
+username/password for ambari: admin/BadPass#1
+username for ssh connections: centos
+----
+.. https://github.com/vsellappa/workshop/tree/master/connect[How To Connect]
 
 . After connecting follow the labs from below.
 
 ==== Labs
 . https://github.com/vsellappa/workshop/tree/master/hive/Lab101[Lab 101]
 
-. Lab 201: TBD
+. https://github.com/vsellappa/workshop/tree/master/hive/Lab102[Lab 201]
