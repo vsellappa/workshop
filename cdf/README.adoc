@@ -46,7 +46,7 @@ NOTE: Venues might have specific ports blocked, check this before-hand. In some 
 + 
 NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/master/keys[here]
 
-. CDF 101 and 201 presentation deck: https://docs.google.com/presentation/d/1TjmJLdaB8gPkoEs33WKteI_f21Eo5K1f6hfrtiRPDbg/edit?usp=sharing[Slidedeck]
+. CDF 101 presentation deck: https://docs.google.com/presentation/d/1TjmJLdaB8gPkoEs33WKteI_f21Eo5K1f6hfrtiRPDbg/edit?usp=sharing[Slidedeck]
 
 === For Participants
 
@@ -54,7 +54,7 @@ NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/ma
 
 * After connecting follow the labs from below.
 
-===== Labs
-* https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Lab 101] 
+=== Labs
+* https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Lab 101] / https://github.com/vsellappa/workshop/blob/master/cdf/slides/CDFIntro.pdf[Slides]
 
-* Lab 201: TBD
+* https://github.com/vsellappa/TwitterDWSDemo[Lab 102]
