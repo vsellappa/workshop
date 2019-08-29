@@ -24,17 +24,24 @@ version: {revnumber}
 
 
 === What
-Contains a collection of documents and links to run a Hive workshop.
+Hive Workshop, aimed at data warehouse optimisation. Toolset used:
+
+.. hive 3.x (with LLAP)
+.. kafka 2.x
+.. spark 2.x
+.. hwc connectors for kafka, spark
+
+Session is run on a Knox (_optional_) + Ranger enabled kerberized HDP3.x cluster.
 
 === Pre-Requisites (For Instructors)
 . Login to AWS (Hortonworks or Cloudera) with your Okta username and password.
-.. AMI, in EU-Frankfurt region HDP31 and HDF34 pre-installed `ami-06c00daa769c734e7`
+.. AMI, in EU-Frankfurt, `ami-08db938b9671cdc19` minimum recommended size m4.2x large.
+.. Login user: `centos` | Service user: `etl_user`
 
 . Copy this AMI to your region for better performance. 
-
-. If you want to start from fresh, the deploy script is https://raw.githubusercontent.com/vsellappa/workshop/master/hive/deploy/deploy_hdp31_hdf34.sh[here].
-.. This script will not install Hive. The easiest way to do that is via Ambari > Add Services.
-.. The AMI also contains public and generated datasets under the /home/centos/datasets directory.
+.. The AMI contains 
+... HortoniaBank demo dataset
+... Public and generated datasets for workshop use under the `/home/etl_user/datasets` directory.
 .. Public datasets : NYC Taxi Data
 +
 [source,shell]
@@ -52,7 +59,7 @@ wget https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2019-06.csv
 
 wget https://github.com/maxis42/Big-Data-Engineering-Coursera-Yandex/raw/master/1%20Big%20data%20essentials/Homeworks/Week%206/data_dictionary_trip_records_yellow.pdf
 ----
-.. Generated data sets are taken from https://github.com/everwatchsolutions/json-data-generator[here]. Bear in mind that maven will need to be installed if you start fresh. The AMI contains the binary with relevant config files for the same.
+.. Generated data sets use https://github.com/everwatchsolutions/json-data-generator[this] to generate data used in the workshop. The AMI contains the datasets with the required configs.
 
 . Create a new ssh key via ssh-keygen and import it into the required region.This key will be used for giving access to the AMI for participants.Save the public key. If you want to reuse the key combinations used https://github.com/vsellappa/workshop/tree/master/keys[here]. The public key is https://drive.google.com/drive/folders/1D6WKX5UzZrfBW1lW_Vjw7V6U3Az7kyiE?usp=sharing[here]. Attach the public key to your AMI instance. 
 
@@ -61,15 +68,21 @@ wget https://github.com/maxis42/Big-Data-Engineering-Coursera-Yandex/raw/master/
 +
 CAUTION: Venues might have specific ports blocked, check this before-hand. In some cases participant laptops might have restrictive firewalls as well.
 
-. Once the instance is up, login via ssh, login to Ambari and check services.
-
- ssh -i <.pem file> -l centos <IPAddress> 
-
-. For Ambari:
-
- http://<IPAddress:8080> 
- username: admin
- password: StrongPassword
+. Once the instance is up
+.. ssh into the instance
++
+[source,bash]
+----
+ssh -i <.pem file> -l centos <IPAddress> 
+----
+.. For Ambari:
++
+[source,bash]
+----
+http://<IPAddress:8080> 
+username: admin
+password: BadPass#1
+----
 
 . Convert the .pem or openssh key to .ppk for windows users: https://aws.amazon.com/premiumsupport/knowledge-center/convert-pem-file-into-ppk/[ConvertPEM]
 .. Upload the .ppk file to a secure location. (I use private github).
@@ -81,12 +94,20 @@ NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/ma
 . TODO: Add slidedeck
 
 === For Participants
+. Change the `/etc/hosts` on your desktop.
+.. https://gist.github.com/zenorocha/18b10a14b2deb214dc4ce43a2d2e2992[How-To]
+.. Map the given cluster IP Address to `*hdp31.cloudera.com*`
+
+. Connection details
+
+ username/password for ambari: admin/BadPass#1
+ username for ssh connections: centos
 
 * https://github.com/vsellappa/workshop/tree/master/connect[How To Connect]
 
-* After connecting follow the labs from below.
+. After connecting follow the labs from below.
 
-===== Labs
-* https://github.com/vsellappa/workshop/tree/master/hive/Lab101[Lab 101]
+==== Labs
+. https://github.com/vsellappa/workshop/tree/master/hive/Lab101[Lab 101]
 
-* Lab 201: TBD
+. Lab 201: TBD

@@ -23,65 +23,92 @@ toc::[]
 === Intro
 In this lab, we will learn how to interact with Hive using HiveQL, do basic CRUD operations and work with External Tables.
 
-* Sanity Check 
-** Login to Ambari 
+* Sanity Check
+** Login to Ambari and check if services are green.
 +
 [source]
 ----
 username: admin
-password: StrongPassword
+password: BadPass#1
 ----
-
-** In Ambari
-+
-[source]
-----
-Hive > Settings > Run as end user instead of Hive user
-----
-set this to `false`.
-+
-Accept the changes and re-start Hive.
 
 * Working With HiveQL
 ** ssh into your cluster https://github.com/vsellappa/workshop/tree/master/connect[how-to]
 
-** Login to beeline as the hive user
+** Change into the service `etl_user`.
 +
-[source]
+[source,bash]
 ----
-sudo su - hive
+sudo su - etl_user
+----
+** `kinit` the user `etl_user`.
++
+[source, bash]
+----
+kinit -Vkt /etc/security/keytabs/etl_user.keytab etl_user/$(hostname -f)@HWXDR.COM
+----
 
-beeline -u jdbc:hive2://demo.hortonworks.com:10000 -n hive -p
+** Login to beeline
++
+[source,bash]
 ----
-password is _StrongPassword_
+beeline -u "jdbc:hive2://localhost:10000/default;principal=hive/$(hostname -f)@HWXDR.COM"
+----
 +
 image::lab1_hive_login.png[]
 
 ** Enter a query in HiveQL
 +
-[source, sql]
+[source,sql]
 ----
 SHOW DATABASES;
 ----
 +
 image::lab1_hive_showdatabases.png[]
 
-** Create table, insert data, describe table
+** Create table
 +
-[source, sql]
+[source,sql]
 ----
-CREATE TABLE students (
+CREATE TABLE IF NOT EXISTS students (
 name VARCHAR(64)
 , age INT
 , gpa DECIMAL(3,2));
+----
++
+This should give you an error similar to the below.
++
+image::lab1_hive_permissionfailure.png[]
 
-INSERT INTO TABLE students VALUES 
+** This indicates a Ranger Access Permission failure. The user `etl_user` does not have permission to write to the `/warehouse/tablespace/managed/hive` directory.
+
+** To add this permission 
+*** Go to the Ranger UI at: `http://hdp31.cloudera.com:6080` and navigate to the Audit tab. In the search bar enter the Start Date and User. 
++
+image::lab1_hive_rangeraccessdenied.png[]
++
+Confirm that its a Ranger Access Permission failure.
+*** Goto the Access Manager and in the HDFS service section , click on `hdp-dr_hadoop`
++
+image::lab1_hive_hdfspermissions_1.png[]
+
+*** Click on Add New Policy and create a new policy as shown below:
++
+image::lab1_hive_hdfspermissions_2.png[]
++
+Save the policy and now exit the Ranger UI.
+
+** Go back to beeline terminal and now rerun the `CREATE TABLE` command. This time this should succeed.
+
+** Insert data and describe table.
++
+[source,sql]
+----
+INSERT INTO TABLE default.students VALUES 
 ('fred flintstone', 35, 1.28)
 , ('barney rubble', 32, 2.32);
 
 DESCRIBE EXTENDED default.students;
-
-!quit
 ----
 +
 NOTE: Note the location attribute of the created table.
@@ -102,24 +129,22 @@ NOTE: Note the location attribute of the created table.
 2,john,smith,junior,engineering
 ----
 +
-** Move the file to /home/hdfs and load to hdfs.
+** Load this file onto hdfs
 +
 [source,bash]
 ----
-sudo su - 
-mv /tmp/students.csv /home/hdfs/.
-su - hdfs
+sudo su - etl_user
+kinit -Vkt /etc/security/keytabs/etl_user.keytab etl_user/$(hostname -f)@HWXDR.COM
 hdfs dfs -mkdir /tmp/data
 hdfs dfs -chmod 777 /tmp/data
-hdfs dfs -put /home/hdfs/students.csv /tmp/data/.
+hdfs dfs -put /tmp/students.csv /tmp/data/.
 hdfs dfs -chmod 777 /tmp/data/students.csv
-hdfs dfs -ls 777 /tmp/data/students.csv
+hdfs dfs -ls /tmp/data/students.csv
 ----
-Logout of hdfs and root.
 + 
 TIP: Check the file students.csv is visible via Ambari > Files View.
 +
-** Create an external table schema definition that specifies the text format, loads data from students.csv located in /tmp/data.
+** In beeline, create an external table schema definition that specifies the text format, loads data from students.csv located in /tmp/data.
 +
 [source,sql]
 ----
@@ -167,6 +192,9 @@ SELECT * FROM names;
 DROP TABLE names_text;
 SELECT * FROM names; 
 ----
++
+TIP: For every new login as `etl_user` , ensure that you `kinit` the session.
+
 * Questions
 . After dropping the external table names_text, what happens to the actual data in hdfs? 
 . After dropping the managed table names, what happens to the actual data in hdfs? 
@@ -177,14 +205,14 @@ SELECT * FROM names;
 === Analysis of Data At Rest - Part 1
 In this lab, we are going to import data at Rest into HDFS and analyse it with Hive.
 
-* Data to be used for analysis is present at `/home/centos/NYCTaxi`. The directory contains the following:
+* Data to be used for analysis is present at `/home/etl_user/datasets/nycTaxi`. The directory contains the following:
 ** Taxi lookup data (taxi+_zone_lookup.csv)
 ** Trip data (yellow_tripdata_2019-*.csv)
 ** Data dictionary for the trip records
 +
 NOTE: The format of the lookup data is different from the trip data. Ensure this is reflected when uploading to HDFS.
 
-* Import the trip data into HDFS and create a Hive table.
+* Import the trip data into HDFS and create a Hive table. Hive Table sql follows:
 +
 [source,sql]
 ----

@@ -1,6 +1,6 @@
 = Hive Workshop - Analysis of Streaming Data With Hive
 <venky@cloudera.com>
-v0.1, 2019-08-16: draft
+v0.2, 2019-08-16: draft
 :page-layout: docs
 :description: Hive Workshop Lab 102
 :icons: font
@@ -26,111 +26,273 @@ This lab assumes familiarity with Hive, Kafka, Spark and Hbase.
 === Pre-Requisites
 A running instance of Hive 3.x, Kafka, Spark and Hbase. For an easy to use AMI and the required datasets. See https://github.com/vsellappa/workshop/tree/master/hive[here].
 
+NOTE: The sections below use Hive Warehouse Connector that comes with HDP 3.1 and requires Hive-LLAP to work.
 
-=== Hive With Kafka
+=== Hive and Kafka
+In this section , we use Hive to analyse a streaming data source in Kafka with data at rest in Hive.
 
-* Get a streaming source of data to write to Kafka.
-** There is a mock data generator present at `/home/centos/datasets/json-data-generator-1.4.1-SNAPSHOT`.
-** The data generator can write an unbounded stream of data of various types onto different sinks including Kafka Topics.
-** Sample configs are TODO: link[here]. Move these config files to `/home/centos/datasets/json-data-generator-1.4.1-SNAPSHOT/conf`.
+_Steps_
+
+. Write streaming data to Kafka.
+. Create a Hive table using Kafka as a storage layer.
+. Join streaming data from Kafka with data at rest in Hive.
+
+_Implementation_
+
+* Writing Streaming Data to Kafka
+** There is a mock data generator present at `/home/etl_user/datasets/json-data-generator-1.4.1-SNAPSHOT`.
+** The data generator writes unbounded streams of data of various types onto different sinks including Kafka Topics.
+** Sample configs are https://github.com/vsellappa/workshop/tree/master/hive/Lab102/utils[here]. Move these config files to `/home/etl_user/datasets/json-data-generator-1.4.1-SNAPSHOT/conf`, if not already present.
 
 ** Test the generator
 +
 [source,bash]
 ----
-cd /home/centos/datasets/
+cd /home/etl_user/datasets/
 json-data-generator-1.4.1-SNAPSHOT/
 
 java -jar json-data-generator-1.4.1-SNAPSHOT.jar logger.config
 ----
 +
 If everything is right, then you should get a stream of data on the console that looks like the below.
-image:jsonDataGeneratorTest.png[]
+image:lab2_hive_jsondatageneratortest.png[]
 +
 The simulator generates simulated trade data in CSV format controlled by the `trading.workflow.json` file.
 +
 Shut the simulator down.
 
-* Create a Kafka Topic
+** Login as `centos` user.
 +
 [source,bash]
 ----
+sudo su - kafka
+
 cd /usr/hdp/current/kafka-broker
 
-bin/kafka-topics.sh --zookeeper localhost:2181 -create --partitions 1 --replication-factor 1 --topic trades
+kinit -Vkt /etc/security/keytabs/kafka.service.keytab kafka/$(hostname -f)@HWXDR.COM
 
-bin/kafka-topics.sh --list --zookeeper localhost:2181
+/usr/hdp/current/kafka-broker/bin/kafka-topics.sh --zookeeper $(hostname -f):2181 -create --partitions 1 --replication-factor 1 --topic trades
+
+/usr/hdp/current/kafka-broker/bin/kafka-topics.sh --zookeeper $(hostname -f):2181 --list
 ----
-* Write data to the Kafka Topic created above.
+TIP: Its good practice to create Kafka Topics as the superuser and provide access permissions to the service user.
+
+** Provide the right access permissions for `etl_user` 
 +
 [source,bash]
 ----
-cd home/centos/datasets/json-data-generator-1.4.1-SNAPSHOT/
+/usr/hdp/current/kafka-broker/bin/kafka-acls.sh --authorizer-properties zookeeper.connect=$(hostname -f) --add --allow-principal User:etl_user --producer --topic trades
+
+/usr/hdp/current/kafka-broker/bin/kafka-acls.sh --authorizer-properties zookeeper.connect=$(hostname -f) --add --allow-principal User:etl_user --consumer --topic trades --group *
+----
+** Write data to the Kafka Topic created above.
++
+[source,bash]
+----
+cd /home/etl_user/datasets/json-data-generator-1.4.1-SNAPSHOT/
 
 java -jar json-data-generator-1.4.1-SNAPSHOT.jar kafka.config
 ----
 +
-By default, the kafka.config writes to a Kafka Topic called `trades` where the broker.server is at `demo.hortonworks.com:6667`. 
+By default, the kafka.config writes to a Kafka Topic called `trades` where the broker.server is at `hdp31.cloudera.com:6667`. 
 
-* Check that data is flowing thru to the kafka consumer.
+** Check that data is flowing thru to the kafka consumer.
 +
 [source,bash]
 ---- 
-bin/kafka-console-consumer.sh --bootstrap-server demo.hortonworks.com:6667 --from-beginning --topic trades
+/usr/hdp/current/kafka-broker/bin/kafka-console-consumer.sh --bootstrap-server $(hostname -f):6667 --from-beginning --topic trades --consumer-property security.protocol=SASL_PLAINTEXT
 ----
 
-* Create a Hive table pointing to the Kafka topic.
+* Create a Hive table using Kafka as a storage layer.
 +
 [source,sql]
 ----
-CREATE EXTERNAL TABLE IF NOT EXISTS trades
-(
- tradeId STRING
-, tradeDate STRING
+CREATE EXTERNAL TABLE IF NOT EXISTS trades (
+ tradeid STRING
+, tradedate STRING
 , venue STRING
 , cpty STRING
-, direction STRING
-, ccy STRING
-, amt DOUBLE
+, dir VARCHAR(1)
+, ccypair STRING
+, amt INTEGER
 , price DOUBLE
-, valuedate STRING
-, usdAmt DOUBLE)
+, valuedate STRING)
 COMMENT 'Trades'
 STORED BY 'org.apache.hadoop.hive.kafka.KafkaStorageHandler'
 TBLPROPERTIES
 (
 "kafka.topic" = "trades"
-,"kafka.bootstrap.servers"="demo.hortonworks.com:6667"
-,"kafka.serde.class"="org.apache.hadoop.hive.serde2.OpenCSVSerde");
+,"kafka.bootstrap.servers"="hdp31.cloudera.com:6667");
 ----
 +
-NOTE: The key properties are the TBLPROPERTIES and the STORED BY clause.
+TIP: The key properties are the TBLPROPERTIES and the STORED BY clause.
 
-* Query Live data with Kafka
-** Number of records in the last 10 minutes;
+** Query Live data in Kafka with Hive
+*** Verify the Trade Records are visible in Hive
 +
 [source,sql]
 ----
-SELECT COUNT(*) FROM trades
-WHERE (`__timestamp` >  1000 * to_unix_timestamp(CURRENT_TIMESTAMP - interval '10' MINUTES));
-----
-** Define a view of data consumed within the past 15 minutes
-+
-[source,sql]
-----
-CREATE VIEW IF NOT EXISTS last_15_minutes_of_trades AS 
-SELECT  tradeId
-, tradeDate
+SELECT tradeid
+, tradedate
+, venue
 , cpty
-, direction
-, ccy
-ADDED FROM trades 
+, dir
+, ccypair
+, amt
+, price
+, valuedate 
+FROM trades;
+----
+*** Count the number of trades done in the last 10 minutes
++
+[source,sql]
+----
+SELECT COUNT(*) 
+FROM 
+trades
+WHERE `__timestamp` >  1000 * to_unix_timestamp(CURRENT_TIMESTAMP - interval '10' MINUTES);
+----
+*** Create a _dynamic_ view of the trades done in the last 15 minutes
++
+[source,sql]
+----
+CREATE VIEW trades_last_15_minutes
+AS 
+SELECT  
+tradeid
+, tradedate
+, cpty
+, ccypair
+, `amt`
+, `price`
+ADDED FROM trades
 WHERE `__timestamp` >  1000 * to_unix_timestamp(CURRENT_TIMESTAMP - interval '15' MINUTES);
----- 
+----
+* Join streaming data with data at rest in Hive
+** Create a table in Hive to hold reference/dimensional data.
++
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS counterparties (
+id INTEGER
+, name STRING
+, address STRING
+, contactPerson STRING);
+
+INSERT INTO counterparties VALUES (1001, "ABC Bank", "1001 Roehampton Av. SouthEnd CR5", "John D");
+
+INSERT INTO counterparties VALUES (1002, "AlphaTrading", "1002 Wolvehampton Av. NorthEnd SR5", "Don J");
+----
+** Generate a counterparty report for trades done in the last 15 minutes.
++
+[source,sql]
+----
+SELECT 
+c.name AS counterparty
+, c.address AS address
+, c.contactPerson AS contact
+, SUM(amt) AS notional
+FROM trades_last_15_minutes t
+JOIN counterparties c
+ON t.cpty = c.name
+GROUP BY c.name,c.address,c.contactperson;
+----
++
+NOTE: `counterparties` is a reference/dimension table joining with a view of a live stream over the past 15 minutes to generate a real time report. 
+This capability essentially converts a typical batch workflow to a real-time streaming application. 
++
+. TODO : Add architecture slide deck. 
+
+* Questions
+. What would be the changes required in the hive table, view if the generated data contained another decimal column like usdamt?
+. Assume a new stream containing real-time FX prices , how would you display that as part of the report?
+. The hive warehouse connector for kafka is bi-directional, try writing data back to the Kafka Topic , for .e.g by changing the price column.
+
+=== Hive and Spark
+In this section , we use Hive and Spark together to bi-directionally access data from each side.
+
+The basic connectivity architecture looks like this.
+image:lab2_hive_hwc_spark.png[]
+
+_Steps_
+
+. Start a spark-shell.
+. Create a Hive session in Spark.
+. Hive-Spark Interaction
+
+_Implementation_
+
+* Start a spark-shell
+** Login as `centos`
++ 
+[source,bash]
+----
+sudo su - etl_user
+
+kinit -Vkt /etc/security/keytabs/etl_user.keytab etl_user/$(hostname -f)@HWXDR.COM
+
+spark-shell --jars /usr/hdp/current/hive_warehouse_connector/hive-warehouse-connector-assembly-1.0.0.3.1.0.0-78.jar
+----
++
+This should give you a spark session like the below:
+image:lab2_hive_sparksession_intro.png[]
++
+
+* Create a Hive session in Spark
+** Assuming the `spark` session created above , import hwc api
++
+[source,scala]
+----
+import com.hortonworks.hwc.HiveWarehouseSession
+
+import com.hortonworks.hwc.HiveWarehouseSession._
+
+val hive = HiveWarehouseSession.session(spark).build()
+----
++
+The below String constants are defined by the  imports and used when writing spark data into hive tables.
++
+----
+HIVE_WAREHOUSE_CONNECTOR
+DATAFRAME_TO_STREAM
+STREAM_TO_STREAM
+----
++
+NOTE: Hive API must be initialized per-session.
+
+* Hive-Spark Interaction
+** Access the Hive tables from Spark
++
+[source,sql]
+----
+hive.setDatabase("DEFAULT")
+
+hive.showTables().show()
+
+hive.execute("DESCRIBE EXTENDED trades").show()
+
+hive.executeQuery("SELECT * FROM trades").show(10)
+----
+** Create a dataframe in Spark from the data https://github.com/vsellappa/workshop/blob/master/hive/Lab102/utils/tradelimits.csv[here]
++
+[source,scala]
+----
+val df = spark.read.format("csv").option("header","true").option("mode", "DROPMALFORMED").load("hdfs:/tmp/data/tradelimits.csv")
+
+df.show()
+----
++
+image:lab2_hive_sparksession_tradelimits.png[]
++
+** Write the data in a Spark Dataframe into a Hive table.
++
+[source,scala]
+----
+df.write.format(hive).mode("append").option("table","tradelimits").save()
+----
+
 * Questions
 
-=== Hive With Spark
-WARNING: TBD !
 
 === Hive With Hbase
 WARNING: TBD !
