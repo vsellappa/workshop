@@ -55,6 +55,8 @@ NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/ma
 * After connecting follow the labs from below.
 
 === Labs
-* https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Lab 101] / https://github.com/vsellappa/workshop/blob/master/cdf/slides/CDFIntro.pdf[Slides]
+* https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Lab 101] / https://github.com/vsellappa/workshop/blob/master/cdf/slides/CDFIntro.pdf[slides]
 
 * https://github.com/vsellappa/TwitterDWSDemo[Lab 102]
+
+* TODO[Lab 201] / https://github.com/alopresto/slides/blob/master/dws_barcelona_2019/byop_custom_processor.pdf[slides]
