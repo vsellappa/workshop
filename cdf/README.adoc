@@ -55,7 +55,7 @@ NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/ma
 * After connecting follow the labs from below.
 
 === Labs
-* https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Lab 101] / https://github.com/vsellappa/workshop/blob/master/cdf/slides/CDFIntro.pdf[slides]
+* https://github.com/vsellappa/HDF-Workshop/blob/master/README.md#lab-start[Lab 101] / https://github.com/vsellappa/workshop/blob/master/cdf/slides/CDF_Lab101_Workshop_ToShare.pdf[slides]
 
 * https://github.com/vsellappa/TwitterDWSDemo[Lab 102]
 
