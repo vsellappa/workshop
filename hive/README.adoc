@@ -35,7 +35,7 @@ Session is run on a Knox (_optional_) + Ranger enabled kerberized HDP3.x cluster
 
 === Pre-Requisites (For Instructors)
 . Login to AWS (Hortonworks or Cloudera) with your Okta username and password.
-.. AMI, in EU-Frankfurt, `ami-08db938b9671cdc19` minimum recommended size m4.2x large.
+.. AMI, in EU-Frankfurt, `ami-02fd8a7045f9fba17` minimum recommended size m4.2x large.
 .. Login user: `centos` | Service user: `etl_user`
 
 . Copy this AMI to your region for better performance. 
@@ -91,7 +91,8 @@ password: BadPass#1
 + 
 NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/master/keys[here]
 
-. TODO: Add slidedeck
+. https://docs.google.com/presentation/d/1gO60IWO483WgqU5zcP88EZIz0fykuAZ_jeio5yLv98o/edit?usp=sharing[Slidedeck]
+
 
 === For Participants
 . Change the `/etc/hosts` on your desktop.
@@ -109,6 +110,6 @@ username for ssh connections: centos
 . After connecting follow the labs from below.
 
 ==== Labs
-. https://github.com/vsellappa/workshop/tree/master/hive/Lab101[Lab 101]
+. https://github.com/vsellappa/workshop/tree/master/hive/Lab101[Lab 101]/ https://github.com/vsellappa/workshop/blob/master/hive/slides/Hive_Lab101_102_Workshop_ToShare.pdf[slides]
 
-. https://github.com/vsellappa/workshop/tree/master/hive/Lab102[Lab 201]
+. https://github.com/vsellappa/workshop/tree/master/hive/Lab102[Lab 102]

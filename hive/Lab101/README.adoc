@@ -111,6 +111,63 @@ INSERT INTO TABLE default.students VALUES
 DESCRIBE EXTENDED default.students;
 ----
 
+* Hive ACID
+** Create a full CRUD transactional table.
++
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS acidtbl (
+a INT
+, b STRING);
+----
+** Show the defaults on the table : 
++
+[source,sql]
+----
+SHOW CREATE TABLE acidtbl;
+----
+image:lab1_hive_acidtable.png[]
+This provides information about the defaults: transactional(ACID) and the ORC data storage format.
+
+** CRUD operations
+*** Insert 
++
+[source,sql]
+----
+INSERT INTO acidtbl (a,b) 
+VALUES (100, "oranges")
+, (200, "apples")
+, (300, "bananas");
+----
+This operation generates a directory and file, `delta_00001_00001/bucket_0000` in HDFS. 
+image:lab1_hive_acidoperations_1.png[]
+
+*** Delete
++
+[source,sql]
+----
+DELETE FROM acidtbl where a = 200;
+----
+This operation generates a directory and file, `delete_delta_00002_00002/bucket_0000`.
+image:lab1_hive_acidoperations_2.png[]
+
+*** Update
++
+[source,sql]
+----
+UPDATE acidtbl SET b = "pears" where a = 300;
+----
+
+** _ACID in CRUD Tables_
+. Hive runs on top of an append-only file system, which means Hive does not perform in-place updates or deletions. Isolation of readers and writers cannot occur in the presence of in-place updates or deletions. In this situation, a lock manager or some other mechanism, is required for isolation. These mechanisms create a problem for long-running queries.
+. Instead of in-place updates, Hive decorates every row with a row ID. The row ID is a struct that consists of the following information:
+The write ID that maps to the transaction that created the row
+The bucket ID, a bit-backed integer with several bits of information, of the physical writer that created the row
+The row ID, which numbers rows as they were written to a data file
++
+image:lab1_hive_implementation_crud.png[]
+. Instead of in-place deletions, Hive appends changes to the table when a deletion occurs. The deleted data becomes unavailable and the compaction process takes care of the garbage collection later.
+
 * Practice
 ** Create a text file named students.csv in /tmp that contains the following lines.
 +
@@ -184,11 +241,46 @@ DROP TABLE names_text;
 SELECT * FROM names; 
 ----
 
-* External vs Managed Table
+* _External vs Managed Table_
 . A major difference between an external and a managed (internal) table, the persistence of table data on the file system after a `DROP TABLE` statement.
 .. External table drop: Hive drops only the metadata, which consists mainly of the schema definition.
 .. Managed table drop: Hive deletes the data and the metadata stored in the Hive warehouse.
 . You can make the external table data available after dropping it by issuing another CREATE EXTERNAL TABLE statement to load the data from the file system.
+
+* Keys and Constraints
++
+These are standard RDBMS features implemented within Hive now primarily used in warehousing use-cases.
+
+** Use built-in surrogate key generator
++
+[source,sql]
+----
+SELECT ROW_NUMBER() OVER () as 
+row_num
+, *
+FROM 
+students;
+----
+** Not Null and Constraints
++
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS persons (
+id INT NOT NULL
+,name STRING NOT NULL
+,age INT);
+----
+** Default value
++
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS persons (
+id INT NOT NULL
+,name STRING NOT NULL
+,age INT
+,created_by STRING DEFAULT CURRENT_USER(),
+,created_date DATE DEFAULT CURRENT_DATE());
+----
 
 * Questions
 . After dropping the external table names_text, what happens to the actual data in hdfs? 
@@ -197,7 +289,7 @@ SELECT * FROM names;
 . How do you kill a query in Hive?
 . Whats the `LOAD DATA ..` command in Hive? How is this different from `INSERT INTO`?
 
-=== Analysis of Data At Rest - Part 1
+=== Analysis of Data At Rest
 In this lab, we are going to import data at Rest into HDFS and analyse it with Hive.
 
 * Data to be used for analysis is present at `/home/etl_user/datasets/nycTaxi`. The directory contains the following:
@@ -277,6 +369,8 @@ FROM yellowTripData y
 GROUP BY y.puLocationId
 ORDER BY cnt;
 ----
+This should give you a resultset with 263 rows with 237 locationId as the region with the most number of pickups.
+image:lab1_hive_region_237.png[]
 
 * Find the zone and borough with the highest number of pickups.
 +
@@ -295,16 +389,8 @@ SELECT x.locationId AS locationId
 FROM taxiZoneLookup x 
 WHERE locationId=(SELECT locationId FROM tripCounts WHERE cnt=(SELECT max(cnt) FROM tripCounts));
 ----
-
-* Questions
-. Why did we put the lookup files in a separate directory in HDFS?
-. Find the region that has the most number of taxi drop-offs.
-. How would you find the top-3 pick up and drop-off regions?
-. What happens if a _normal_ table is created with the same name as a temporary table?
-. Create a view on top of the trip data table casting the data into the desired datatypes.
-
-=== Analysis of Data At Rest - Part 2
-In this lab, we will use Materialized views and transactional tables to further analyse the data.
+If everything is correct, then you should get a resultset like the below. locationid:237 ; zone: Upper East Side South ; borough: Manhattan ; servicezone : YellowZone
+image:lab1_hive_zoneborough_pickups.png[]
 
 * Find the peak-hours for taxi pickup. This time we use Materialized Views instead of a temporary table.
 +
@@ -323,9 +409,18 @@ GROUP BY tpepPickupDateTime;
 SELECT x.puHour
 , x.puCount 
 FROM peakHours x 
-WHERE x.puCount=(SELECT max(y.puCount) FROM peakHours y))
+WHERE x.puCount=(SELECT max(y.puCount) FROM peakHours y)
 ----
-* https://cwiki.apache.org/confluence/display/Hive/Materialized+views[Materialized Views]
+And the result should look like this 
+image:lab1_hive_peakhours_result.png[]
+
+** For more details on https://cwiki.apache.org/confluence/display/Hive/Materialized+views[Materialized Views]
+
 
 * Questions
-. How do you enable automatic query re-writing in Material Views? This is a *must-do*
+. Why did we put the lookup files in a separate directory in HDFS?
+. Find the region that has the most number of taxi drop-offs.
+. How would you find the top-3 pick up and drop-off regions?
+. What happens if a _normal_ table is created with the same name as a temporary table?
+. Create a view on top of the trip data table casting the data into the desired datatypes.
+. How do you enable automatic query re-writing in Materialized Views? This is a *must-do*

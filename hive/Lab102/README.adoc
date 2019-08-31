@@ -21,7 +21,7 @@ endif::[]
 toc::[]
 
 === Intro
-This lab assumes familiarity with Hive, Kafka, Spark and Hbase.
+This lab assumes familiarity with Hive, Kafka and Spark.
 
 === Pre-Requisites
 A running instance of Hive 3.x, Kafka, Spark and Hbase. For an easy to use AMI and the required datasets. See https://github.com/vsellappa/workshop/tree/master/hive[here].
@@ -290,9 +290,3 @@ image:lab2_hive_sparksession_tradelimits.png[]
 ----
 df.write.format(hive).mode("append").option("table","tradelimits").save()
 ----
-
-* Questions
-
-
-=== Hive With Hbase
-WARNING: TBD !
