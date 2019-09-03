@@ -288,5 +288,5 @@ image:lab2_hive_sparksession_tradelimits.png[]
 +
 [source,scala]
 ----
-df.write.format(hive).mode("append").option("table","tradelimits").save()
+df.write.format(HIVE_WAREHOUSE_CONNECTOR).mode("append").option("table","tradelimits").save()
 ----
