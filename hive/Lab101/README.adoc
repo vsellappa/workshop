@@ -292,7 +292,7 @@ id INT NOT NULL
 === Analysis of Data At Rest
 In this lab, we are going to import data at Rest into HDFS and analyse it with Hive.
 
-* Data to be used for analysis is present at `/home/etl_user/datasets/nycTaxi`. The directory contains the following:
+* Data to be used for analysis is present at `/home/etl_user/datasets`. The directory contains the following:
 ** Taxi lookup data (taxi+_zone_lookup.csv)
 ** Trip data (yellow_tripdata_2019-*.csv)
 ** Data dictionary for the trip records
