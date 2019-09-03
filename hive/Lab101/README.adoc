@@ -169,7 +169,7 @@ image:lab1_hive_implementation_crud.png[]
 . Instead of in-place deletions, Hive appends changes to the table when a deletion occurs. The deleted data becomes unavailable and the compaction process takes care of the garbage collection later.
 
 * Practice
-** Create a text file named students.csv in /tmp that contains the following lines.
+** Create a text file (use your favorite editor) named students.csv in /tmp that contains the following lines.
 +
 [source,csv]
 ----
@@ -299,7 +299,7 @@ In this lab, we are going to import data at Rest into HDFS and analyse it with H
 +
 NOTE: The format of the lookup data is different from the trip data. Ensure this is reflected when uploading to HDFS.
 
-* Import the trip data into HDFS and create a Hive table. Hive Table sql follows:
+* Import the trip data into HDFS (Follow the steps used above for `students.csv`,  ensure permissions are granted on HDFS properly) and create a Hive table. Hive Table sql follows:
 +
 [source,sql]
 ----
