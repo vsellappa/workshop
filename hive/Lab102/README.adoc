@@ -85,6 +85,8 @@ TIP: Its good practice to create Kafka Topics as the superuser and provide acces
 
 /usr/hdp/current/kafka-broker/bin/kafka-acls.sh --authorizer-properties zookeeper.connect=$(hostname -f) --add --allow-principal User:etl_user --consumer --topic trades --group *
 ----
+NOTE: Watch the `*` in the end, you might have to escape it based on your shell configuration. 
+
 ** Write data to the Kafka Topic created above.
 +
 [source,bash]
