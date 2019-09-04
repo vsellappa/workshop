@@ -252,7 +252,7 @@ import com.hortonworks.hwc.HiveWarehouseSession._
 val hive = HiveWarehouseSession.session(spark).build()
 ----
 +
-The below String constants are defined by the  imports and used when writing spark data into hive tables.
+The below String constants are defined by the imports and used when writing spark data into hive tables.
 +
 ----
 HIVE_WAREHOUSE_CONNECTOR
@@ -292,3 +292,9 @@ image:lab2_hive_sparksession_tradelimits.png[]
 ----
 df.write.format(HIVE_WAREHOUSE_CONNECTOR).mode("append").option("table","tradelimits").save()
 ----
++ 
+Now go back and check the table created in Hive. 
+
+* Questions
+. How would you stream the data from a dataframe into a Hive table?
+. How would you stream the data from a dataframe into another stream?
