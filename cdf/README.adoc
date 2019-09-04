@@ -52,6 +52,15 @@ NOTE: A working key combination is https://github.com/vsellappa/workshop/tree/ma
 
 * https://github.com/vsellappa/workshop/tree/master/connect[How To Connect]
 
+* Check if you can login to Ambari
++
+[source,bash]
+----
+http://<IPAddress:8080> 
+username: admin
+password: StrongPassword
+----
+
 * After connecting follow the labs from below.
 
 === Labs
