@@ -298,3 +298,5 @@ Now go back and check the table created in Hive.
 * Questions
 . How would you stream the data from a dataframe into a Hive table?
 . How would you stream the data from a dataframe into another stream?
++
+Detailed Info: https://github.com/hortonworks/hive-warehouse-connector[HWC API]
