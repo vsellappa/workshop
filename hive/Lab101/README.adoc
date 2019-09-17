@@ -369,8 +369,24 @@ FROM yellowTripData y
 GROUP BY y.puLocationId
 ORDER BY cnt;
 ----
++
+NOTE: Did the `group by` query fail ? If yes, logout and log back into beeline with a different port
+
+* Login to beeline using a different port
++
+[source,sql]
+----
+beeline -u "jdbc:hive2://localhost:10500/default;principal=hive/$(hostname -f)@HWXDR.COM"
+----
++
+Now re-run the `group by` query from before.
++
 This should give you a resultset with 263 rows with 237 locationId as the region with the most number of pickups.
 image:lab1_hive_region_237.png[]
+
+* Questions
+. Why did the query succeed now?
+. Whats the port number 10500 in Hive pointing to?
 
 * Find the zone and borough with the highest number of pickups.
 +
