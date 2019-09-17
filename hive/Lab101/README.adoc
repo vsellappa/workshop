@@ -52,7 +52,7 @@ kinit -Vkt /etc/security/keytabs/etl_user.keytab etl_user/$(hostname -f)@HWXDR.C
 +
 [source,bash]
 ----
-beeline -u "jdbc:hive2://localhost:10500/default;principal=hive/$(hostname -f)@HWXDR.COM"
+beeline -u "jdbc:hive2://localhost:10000/default;principal=hive/$(hostname -f)@HWXDR.COM"
 ----
 +
 image::lab1_hive_login.png[]
