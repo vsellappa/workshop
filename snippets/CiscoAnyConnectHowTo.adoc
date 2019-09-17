@@ -1,0 +1,47 @@
+= Cisco AnyConnect How-To
+<venky@cloudera.com>
+v0.1, 2019-09-16: draft
+:page-layout: docs
+:imagesdir: ./images
+:description: Cisco AnyConnect - how-to
+:icons: font
+:uri-fontawesome: https://fontawesome.com/v4.7.0/
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+=== Intro
+How-to connect to Cisco AnyConnect VPN for accessing your cluster.
+
+=== Steps
+. Open AnyConnect VPN Client on desktop.
+
+. Uncheck ```Block Connections to untrusted servers```.
++
+image::uncheckBlockConnections.png[]
+
+. Enter the IP Address of the Proxy Server `18.184.33.94`.
++
+image::enterIPAddress.png[]
+
+. Click on Connect Anyway 
++
+image::ignoreSecurityRisk.png[]
+
+. Enter the username `zzzuser`
++
+image::enterUserName.png[]
+
+. Get the password from the instructor.
++
+image::enterPassword.png[]
+
+. You should now be connected.
++
+image::connectServer.png[]
