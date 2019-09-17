@@ -387,6 +387,7 @@ image:lab1_hive_region_237.png[]
 * Questions
 . Why did the query succeed now?
 . Whats the port number 10500 in Hive pointing to?
+. Notice, the change in performance when you re-run the same query
 
 * Find the zone and borough with the highest number of pickups.
 +
@@ -405,7 +406,12 @@ SELECT x.locationId AS locationId
 FROM taxiZoneLookup x 
 WHERE locationId=(SELECT locationId FROM tripCounts WHERE cnt=(SELECT max(cnt) FROM tripCounts));
 ----
-If everything is correct, then you should get a resultset like the below. locationid:237 ; zone: Upper East Side South ; borough: Manhattan ; servicezone : YellowZone
+If everything is correct, then you should get a resultset like the below.
++
+[source]
+---- 
+locationid:237 ; zone: Upper East Side South ; borough: Manhattan ; servicezone : YellowZone
+----
 image:lab1_hive_zoneborough_pickups.png[]
 
 * Find the peak-hours for taxi pickup. This time we use Materialized Views instead of a temporary table.
@@ -425,7 +431,7 @@ GROUP BY tpepPickupDateTime;
 SELECT x.puHour
 , x.puCount 
 FROM peakHours x 
-WHERE x.puCount=(SELECT max(y.puCount) FROM peakHours y)
+WHERE x.puCount=(SELECT max(y.puCount) FROM peakHours y);
 ----
 And the result should look like this 
 image:lab1_hive_peakhours_result.png[]
