@@ -99,6 +99,8 @@ image::lab1_hive_hdfspermissions_2.png[]
 Save the policy and now exit the Ranger UI.
 
 ** Go back to beeline terminal and now rerun the `CREATE TABLE` command. This time it should succeed.
++
+NOTE: You might have to re-login to beeline to allow the Ranger policy to take affect. 
 
 ** Insert data and describe table.
 +
@@ -387,7 +389,9 @@ image:lab1_hive_region_237.png[]
 * Questions
 . Why did the query succeed now?
 . Whats the port number 10500 in Hive pointing to?
-. Notice, the change in performance when you re-run the same query
+. Notice, the change in performance when you re-run the same query?
++
+TIP: Port 10500 points to a Hive instance using Hive LLAP and that instance uses a cache. Take a quick look at the slide deck again to refresh.
 
 * Find the zone and borough with the highest number of pickups.
 +
