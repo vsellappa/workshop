@@ -1,0 +1,88 @@
+= How To Create a CDH Cluster
+venky@cloudera.com
+v0.1, June 9, 2020: Draft
+:doctype: book
+:reproducible:
+:source-highlighter: rouge
+:listing-caption: Listing
+:pdf-page-size: Letter
+:page-layout: docs
+:description: How To Create a CDH Cluster
+:imagesdir: ./images
+:uri-config: https://github.com/asciidoctor/asciidoctor/blob/master/compat/asciidoc.conf
+:uri-fontawesome: https://fontawesome.com/v4.7.0/
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc:
+:toc-placement!:
+
+[abstract]
+
+toc::[]
+
+== What
+How To Create a CDH Cluster
+
+== Steps
+. Create a Centos 7.x VM
+.. On AWS , eu-west-2 use `ami-00846a67`.
+
+. Create a VM instance in the normal way and attach https://github.com/vsellappa/workshop/tree/master/keys[SSH Keys].
+
+. Login to the VM
+.. How to Connect 
+... https://github.com/vsellappa/workshop/tree/master/connect[For Windows]
+... https://www.servermania.com/kb/articles/ssh-mac/[MacOS]
+... Linux (Left as an exercise for the readers).
+
+. Change to root , all steps below are run as `root`.
++
+[source, bash]
+----
+sudo su -
+----
+
+. Cluster creation
+.. Install `git`
++ 
+[source, bash]
+----
+yum install -y git
+----
+.. Clone the cluster scripts
++
+[source, bash]
+----
+git clone https://github.com/fabiog1901/OneNodeCDHCluster.git
+----
+.. Execute the setup script
++
+[source, bash]
+----
+cd OneNodeCDHCluster
+chmod +x setup.sh
+----
+... The script setup.sh takes 3 arguments:
+.... The cloud provider name: aws,azure,gcp.
+.... The template file.
+.... OPTIONAL the Docker Device disk mount point.
+
+.. Create cluster without CDSW on AWS using default_template.json
++
+[source, bash]
+----
+./setup.sh aws templates/default_template.json
+----
+.. Wait until the script finishes, check for any error.
+... Once the script returns, you can open Cloudera Manager at 
++
+[source, bash]
+----
+http://<public-IP>:7180
+----
+
